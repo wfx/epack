@@ -119,7 +119,7 @@ def cmd(cmd="", arg=""):
 	if t == 0:
 		os.system(cmd+" "+arg)
 	else:
-		print "Mimetype not supported"
+		print ("Mimetype not supported")
 
 def cmdline():
 	file = sys.argv[1]
