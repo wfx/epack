@@ -62,10 +62,10 @@ class Application(object):
 		self.fr_info.content_set(self.lb)
 		self.lb.show()
 
-		self.bt_archive = Button(self.win, text="make archive")
-		self.bt_archive.callback_clicked_add(self.make_archive)
-		self.bx_main.pack_end(self.bt_archive)
-		self.bt_archive.show()
+		#self.bt_archive = Button(self.win, text="make archive")
+		#self.bt_archive.callback_clicked_add(self.make_archive)
+		#self.bx_main.pack_end(self.bt_archive)
+		#self.bt_archive.show()
 
 		self.bt_extract = Button(self.win, text="extract")
 		self.bt_extract.callback_clicked_add(self.extract)
