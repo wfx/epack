@@ -82,7 +82,7 @@ class Application(object):
 		elementary.exit()
 
 	def extract(self, obj):
-		if self.file.type == "application/tar.gz":
+		if self.file.type == "application/tar.gz" or self.file.type == "application/x-gzip":
 			cmd(cmd="tar", arg="xzf "+self.file.name)
 		elif self.file.type == "application/bz2":
 			cmd(cmd="bunzip2", arg=self.file.name)
