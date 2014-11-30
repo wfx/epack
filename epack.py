@@ -84,17 +84,17 @@ class Application(object):
 	def extract(self, obj):
 		if self.file.type == "application/tar.gz" or self.file.type == "application/x-gzip":
 			cmd(cmd="tar", arg="xzf "+self.file.name)
-		elif self.file.type == "application/bz2":
+		elif self.file.type == "application/bz2" or self.file.type == "application/x-bz2":
 			cmd(cmd="bunzip2", arg=self.file.name)
-		elif self.file.type == "application/rar":
-			cmd(cmd="rar", arg="x "+self.file.name)
-		elif self.file.type == "application/gz":
+		elif self.file.type == "application/rar" or self.file.type == "application/x-rar":
+			cmd(cmd="unrar", arg="x "+self.file.name)
+		elif self.file.type == "application/gz" or self.file.type == "application/x-gz":
 			cmd(cmd="gunzip", arg=self.file.name)
-		elif self.file.type == "application/tar":
+		elif self.file.type == "application/tar" or self.file.type == "application/x-tar":
 			cmd(cmd="tar", arg="xf "+self.file.name)
 		elif self.file.type == "application/tbz2" or self.file.type == "application/tar.bz2":
 			cmd(cmd="tar", arg="xjf "+self.file.name)
-		elif self.file.type == "application/tgz" or self.file.type == "application/zip":
+		elif self.file.type == "application/tgz" or self.file.type == "application/zip" or self.file.type == "application/x-zip":
 			cmd(cmd="unzip", arg=self.file.name)
 		elif self.file.type == "application/Z":
 			cmd(cmd="uncompress", arg=self.file.name)
