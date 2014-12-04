@@ -98,9 +98,9 @@ class Application(object):
 			print(self.file.type + " cannot be extracted")
 		elementary.exit()
 
-	def command_execute(self, command, *args, **kwargs):
+	def command_execute(self, command, arg):
 
-		command = command+" "+kwargs['arg']
+		command = command+" "+arg
 		self.cmd = ecore.Exe(
 			command,
 			ecore.ECORE_EXE_PIPE_READ |
