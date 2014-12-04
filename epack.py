@@ -77,30 +77,30 @@ class Application(object):
 		self.ui.update()
 
 	def extract(self, obj):
-		# TODO: use a dictionary?
-		if self.target.mimetype == "application/tar.gz" or self.target.mimetype == "application/x-gzip":
-			self.command_execute(command="tar", arg="xzf "+self.target.name)
-		elif self.target.mimetype == "application/bz2" or self.target.mimetype == "application/x-bz2":
-			self.command_execute(command="bunzip2", arg=self.target.name)
-		elif self.target.mimetype == "application/rar" or self.target.mimetype == "application/x-rar":
-			self.command_execute(command="unrar", arg="x "+self.target.name)
-		elif self.target.mimetype == "application/gz" or self.target.mimetype == "application/x-gz":
-			self.command_execute(command="gunzip", arg=self.self.target.name)
-		elif self.target.mimetype == "application/tar" or self.target.mimetype == "application/x-tar":
-			self.command_execute(command="tar", arg="xf "+sself.target.name)
-		elif self.target.mimetype == "application/tbz2" or self.target.mimetype == "application/tar.bz2":
-			self.command_execute(command="tar", arg="xjf "+self.target.name)
-		elif self.target.mimetype == "application/tgz" or self.target.mimetype == "application/zip" or self.target.mimetype == "application/x-zip":
-			self.command_execute(command="unzip", arg=self.target.name)
-		elif self.target.mimetype == "application/Z":
-			self.command_execute(command="uncompress", arg=self.target.name)
-		else:
-			print(self.file.type + " cannot be extracted")
+		command = {
+			'application/tar.gz': 'tar xzf',
+			'application/x-gzip': 'tar xzf',
+			'application/bz2': 'bunzip2',
+			'application/x-bz2': 'bunzip2',
+			'application/rar': 'unrar x',
+			'application/x-rar': 'unrar x',
+			'application/gz': 'gunzip',
+			'application/x-gz': 'gunzip',
+			'application/tar': 'tar xf',
+			'application/x-tar': 'tar xf',
+			'application/tbz2': 'tar xjf',
+			'application/tar.bz2': 'tar xjf',
+			'application/tgz': 'unzip',
+			'application/x-tgz': 'unzip',
+			'application/zip': 'unzip',
+			'application/x-zip': 'unzip',
+			'application/Z': 'uncompress',
+			'application/x-Z': 'uncompress'}
+
+		self.command_execute(command[self.target.mimetype]+" "+self.target.name)
 		elementary.exit()
 
-	def command_execute(self, command, arg):
-
-		command = command+" "+arg
+	def command_execute(self, command):
 		self.cmd = ecore.Exe(
 			command,
 			ecore.ECORE_EXE_PIPE_READ |
