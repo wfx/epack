@@ -13,19 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-# Doubleclick on File.
-#  Get archive mimetytpe (tar, zip, whatever)
-#  Create from archive a file list
-#  Show file list
-#  Show a make folder option (label into folder)
-#  show a delete after extract option (label delete archive)
-#  show extract button (label extract)
-#  extract:
-#  test if command exist
-#  start spinner
-#  extract archive
-#  stop spinner
+
 
 __author__ = "Wolfgang Morawetz"
 __copyright__ = "Copyright (C) 2014 Wolfgang Morawetz"
@@ -64,20 +52,9 @@ FILL_BOTH = EVAS_HINT_FILL, EVAS_HINT_FILL
 class Application(object):
 	def __init__(self):
 		self.userid = os.getuid()
-		self.target = Target(cmdline())
 		self.args = None
 		self.kwargs = None
-		self.wm = WinMain("epack")
-		self.ui = Interface(self.wm.win)
-		self.ui.data_archive_name = self.target.name
-		self.ui.data_archive_type = self.target.mimetype
-		self.ui.data_archive_list = None
-		self.ui.bt_extract_cb = self.extract
-		self.ui.bt_extract_text = "extract"
-		self.ui.update()
-
-	def extract(self, obj):
-		command = {
+		self.map_cmd_extract = {
 			'application/tar.gz': 'tar xzf',
 			'application/x-gzip': 'tar xzf',
 			'application/bz2': 'bunzip2',
@@ -96,9 +73,49 @@ class Application(object):
 			'application/x-zip': 'unzip',
 			'application/Z': 'uncompress',
 			'application/x-Z': 'uncompress'}
+		self.map_cmd_list = {
+			'application/tar.gz': 'tar xzf',
+			'application/x-gzip': 'tar xzf',
+			'application/bz2': 'bunzip2',
+			'application/x-bz2': 'bunzip2',
+			'application/rar': 'unrar x',
+			'application/x-rar': 'unrar x',
+			'application/gz': 'gunzip',
+			'application/x-gz': 'gunzip',
+			'application/tar': 'tar xf',
+			'application/x-tar': 'tar xf',
+			'application/tbz2': 'tar xjf',
+			'application/tar.bz2': 'tar xjf',
+			'application/tgz': 'zipinfo -1',
+			'application/x-tgz': 'zipinfo -1',
+			'application/zip': 'zipinfo -1',
+			'application/x-zip': 'zipinfo -1',
+			'application/Z': 'uncompress',
+			'application/x-Z': 'uncompress'}
 
-		self.command_execute(command[self.target.mimetype]+" "+self.target.name)
+		self.archiv = FileData(cmdline())
+		self.data_archive_list = None
+		self.archive_list()
+
+		self.wm = WinMain("epack")
+		self.ui = Interface(self.wm.win)
+		self.ui.data_archive_name = self.archiv.filename
+		self.ui.data_archive_type = self.archiv.filetype
+		self.ui.data_archive_list = self.data_archive_list
+		self.ui.bt_extract_cb = self.archive_extract
+		self.ui.bt_extract_text = "extract"
+		self.ui.update()
+
+	def archive_extract(self, obj):
+		self.command_execute(self.map_cmd_extract[self.archiv.filetype]+" "+self.archiv.filename)
 		elementary.exit()
+
+	def archive_list(self):
+		if (self.map_cmd_extract[self.archiv.filetype]):
+			self.command_execute(self.map_cmd_list[self.archiv.filetype])
+
+		else:
+			return False
 
 	def command_execute(self, command):
 		self.cmd = ecore.Exe(
@@ -108,34 +125,37 @@ class Application(object):
 			ecore.ECORE_EXE_PIPE_WRITE
 		)
 		self.cmd.on_add_event_add(self.command_started)
+		self.cmd.on_data_event_add(self.command_data)
 		self.cmd.on_error_event_add(self.command_error)
 		self.cmd.on_del_event_add(self.command_done)
 
 	def command_started(self, command, event):
 		print("Start Command")
 
+	def command_data(self, command, event):
+		print(len(event.lines))
+
 	def command_error(self, command, event):
-		print("Error Command")
+		print("Error Command", event)
 
 	def command_done(self, command, event):
 		print("Command Done")
 
-class Target(object):
-	def __init__(self, target):
-		self.__target_name = target
-		self.__target_name = self.__target_name.replace("file://","")
-		self.__target_magic = magic.open(magic.MAGIC_MIME_TYPE)
-		self.__target_magic.load()
-		self.__target_type = self.__target_magic.file(self.__target_name)
+class FileData(object):
+	def __init__(self, data):
+		self.__name = data.replace("file://","")
+		self.__magic = magic.open(magic.MAGIC_MIME_TYPE)
+		self.__magic.load()
+		self.__type = self.__magic.file(self.__name)
 
-	def __get_target_name(self):
-		return self.__target_name
+	def __get_file_name(self):
+		return self.__name
 
-	def __get_target_type(self):
-		return self.__target_type
+	def __get_file_type(self):
+		return self.__type
 
-	name = property(__get_target_name)
-	mimetype = property(__get_target_type)
+	filename = property(__get_file_name)
+	filetype = property(__get_file_type)
 
 
 
