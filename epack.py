@@ -17,13 +17,13 @@
 # ####################################################################
 #
 # Thanks to:
-# davemds, he helps me realy lot!
+# davemds, helps me realy lot!
 #
 
 
 __author__ = "Wolfgang Morawetz"
 __copyright__ = "Copyright (C) 2014 Wolfgang Morawetz"
-__version__ = "Alpha.0.2014.12.4"
+__version__ = "2014.12.7.050"
 __description__ = 'A simple tool to extract any file with efm'
 __github__ = 'https://github.com/wfx/epack'
 __source__ = 'Source code and bug reports: {0}'.format(__github__)
