@@ -85,12 +85,12 @@ def mime_type_query(fname):
 
 class MainWin(StandardWindow):
     def __init__(self, fname, mime):
-        self.fname = fname.replace("file://","")
+        self.fname = fname
         self.mime_type = mime
         self.cdata = list()
 
         # the window
-        StandardWindow.__init__(self, 'epack', 'Epack:'+self.fname)
+        StandardWindow.__init__(self, 'epack', 'Epack: '+self.mime_type)
         self.autodel_set(True)
         self.callback_delete_request_add(lambda o: elementary.exit())
 
@@ -163,6 +163,7 @@ class MainWin(StandardWindow):
 if __name__ == "__main__":
 
     fname = sys.argv[1]
+    fname = fname.replace("file://","")
     mime = mime_type_query(fname)
 
     elementary.init()
