@@ -74,24 +74,10 @@ class Application(object):
 			'application/Z': 'uncompress',
 			'application/x-Z': 'uncompress'}
 		self.map_cmd_list = {
-			'application/tar.gz': 'tar xzf',
-			'application/x-gzip': 'tar xzf',
-			'application/bz2': 'bunzip2',
-			'application/x-bz2': 'bunzip2',
-			'application/rar': 'unrar x',
-			'application/x-rar': 'unrar x',
-			'application/gz': 'gunzip',
-			'application/x-gz': 'gunzip',
-			'application/tar': 'tar xf',
-			'application/x-tar': 'tar xf',
-			'application/tbz2': 'tar xjf',
-			'application/tar.bz2': 'tar xjf',
 			'application/tgz': 'zipinfo -1',
 			'application/x-tgz': 'zipinfo -1',
 			'application/zip': 'zipinfo -1',
-			'application/x-zip': 'zipinfo -1',
-			'application/Z': 'uncompress',
-			'application/x-Z': 'uncompress'}
+			'application/x-zip': 'zipinfo -1'}
 
 		self.archiv = FileData(cmdline())
 		self.data_archive_list = None
@@ -133,7 +119,7 @@ class Application(object):
 		print("Start Command")
 
 	def command_data(self, command, event):
-		print(len(event.lines))
+		print(event.lines[0])
 
 	def command_error(self, command, event):
 		print("Error Command", event)
