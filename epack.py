@@ -85,14 +85,21 @@ def mime_type_query(fname):
 
 class MainWin(StandardWindow):
     def __init__(self, fname, mime):
-        self.fname = fname
+        self.fname = fname.replace("file://","")
         self.mime_type = mime
         self.cdata = list()
 
         # the window
-        StandardWindow.__init__(self, 'epack', 'Epack')
+        StandardWindow.__init__(self, 'epack', 'Epack:'+self.fname)
         self.autodel_set(True)
         self.callback_delete_request_add(lambda o: elementary.exit())
+
+
+        #if not EXTRACT_MAP.get(mime):
+        #    errwin = Label(self)
+        #    errwin.text_set("Mimetype of archive not supported")
+        #    errwin = InnerWindow(self, content=lb)
+        #    errwin.show()
 
         # main vertical box
         vbox = Box(self, size_hint_weight=EXPAND_BOTH)
@@ -157,10 +164,6 @@ if __name__ == "__main__":
 
     fname = sys.argv[1]
     mime = mime_type_query(fname)
-
-    if not EXTRACT_MAP.get(mime):
-        print("Mimetype of archive not supported")
-        sys.exit(0)
 
     elementary.init()
     MainWin(fname, mime)
