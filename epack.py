@@ -36,6 +36,7 @@ try:
     from efl.evas import EVAS_HINT_EXPAND, EVAS_HINT_FILL
     from efl import elementary
     from efl.elementary.window import StandardWindow
+    from efl.elementary.innerwindow import InnerWindow
     from efl.elementary.box import Box
     from efl.elementary.frame import Frame
     from efl.elementary.icon import Icon
@@ -90,40 +91,42 @@ class MainWin(StandardWindow):
         self.cdata = list()
 
         # the window
-        StandardWindow.__init__(self, 'epack', 'Epack: '+self.mime_type)
+        StandardWindow.__init__(self, 'epack', 'Epack')
         self.autodel_set(True)
         self.callback_delete_request_add(lambda o: elementary.exit())
 
 
-        #if not EXTRACT_MAP.get(mime):
-        #    errwin = Label(self)
-        #    errwin.text_set("Mimetype of archive not supported")
-        #    errwin = InnerWindow(self, content=lb)
-        #    errwin.show()
+        if not EXTRACT_MAP.get(mime):
+            errlb = Label(self)
+            errlb.text_set("Mimetype: "+self.mime_type+" is not supported")
+            errwin = InnerWindow(self, content=errlb)
+            errwin.show()
+        else:
+            # main vertical box
+            vbox = Box(self, size_hint_weight=EXPAND_BOTH)
+            self.resize_object_add(vbox)
+            vbox.show()
 
-        # main vertical box
-        vbox = Box(self, size_hint_weight=EXPAND_BOTH)
-        self.resize_object_add(vbox)
-        vbox.show()
+            # list with file content
+            self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
+                                  size_hint_align=FILL_BOTH)
+            # FIXME:
+            # This will fail... go with LIST_MAP{....}
+            self.command_execute('bsdtar -tf '+self.fname)
+            self.file_list.show()
+            vbox.pack_end(self.file_list)
 
-        # list with file content
-        self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
-                                    size_hint_align=FILL_BOTH)
-        self.command_execute('bsdtar -tf '+self.fname)
-        self.file_list.show()
-        vbox.pack_end(self.file_list)
+            # progress bar
+            self.pbar = Progressbar(self, size_hint_weight=EXPAND_HORIZ,
+                                    size_hint_align=FILL_HORIZ)
+            vbox.pack_end(self.pbar)
+            self.pbar.show()
 
-        # progress bar
-        self.pbar = Progressbar(self, size_hint_weight=EXPAND_HORIZ,
-                                        size_hint_align=FILL_HORIZ)
-        vbox.pack_end(self.pbar)
-        self.pbar.show()
-
-        # extract button
-        self.btn1 = Button(self, text='extract')
-        self.btn1.callback_clicked_add(self.extract_btn_cb)
-        self.btn1.show()
-        vbox.pack_end(self.btn1)
+            # extract button
+            self.btn1 = Button(self, text='extract')
+            self.btn1.callback_clicked_add(self.extract_btn_cb)
+            self.btn1.show()
+            vbox.pack_end(self.btn1)
 
         # show the window
         self.resize(300, 200)
