@@ -135,7 +135,7 @@ class MainWin(StandardWindow):
             return
         cmd = 'pv -n %s | %s ' % (self.fname, cmd)
         self.btn1.disabled = True
-        self.command_extract(cmd)
+        self.command_execute(cmd)
         #self.btn1.disabled = False
         elementary.exit()
 
