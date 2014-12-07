@@ -176,9 +176,12 @@ class MainWin(StandardWindow):
         self.show()
 
     def chosen_folder_cb(self, fs, folder):
-        self.fsb.text = folder
+        if folder:
+            self.fsb.text = folder
+            os.chdir(folder)
 
     def extract_btn_cb(self, btn):
+<<<<<<< HEAD
         # TODO: maybe this way
         # 1, check if achrive in target folder
         # 2, if not then move it.
@@ -188,6 +191,8 @@ class MainWin(StandardWindow):
         else:
             print("mv it first!")
 
+=======
+>>>>>>> d4ee5fbf0ae1d4b4c75851780a99d2eba2a84e78
         cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         self.command_execute(cmd)
@@ -237,6 +242,7 @@ if __name__ == "__main__":
 
     fname = sys.argv[1]
     fname = fname.replace("file://","")
+    fname = os.path.abspath(fname)
     mime = mime_type_query(fname)
 
     elementary.init()
