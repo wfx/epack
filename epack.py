@@ -14,14 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# ####################################################################
-#
-# Thanks to:
-# davemds, helps me realy lot!
-#
 
-
-__author__ = "Wolfgang Morawetz"
+__authors__ = "Dave Andreoli (daveMDS) & Wolfgang Morawetz (wfx)"
 __copyright__ = "Copyright (C) 2014 Wolfgang Morawetz"
 __version__ = "2014.12.7.050"
 __description__ = 'A simple tool to extract any file with efm'
