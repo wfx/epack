@@ -183,6 +183,11 @@ class MainWin(StandardWindow):
         # 1, check if achrive in target folder
         # 2, if not then move it.
         # 3, extract it.
+        if os.path.isfile(self.fsb.text+"/"+os.path.basename(self.fname)):
+            print("File exist")
+        else:
+            print("mv it first!")
+
         cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         self.command_execute(cmd)
