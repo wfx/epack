@@ -131,12 +131,27 @@ class MainWin(StandardWindow):
             self.resize_object_add(vbox)
             vbox.show()
 
+            # header lable + spinner
+            hbox = Box(self, horizontal=True, align=(0.0, 0.0),
+                       size_hint_weight=EXPAND_HORIZ, size_hint_align=FILL_HORIZ)
+            hbox.show()
+            vbox.pack_end(hbox)
+
+            self.spinner = Progressbar(hbox, style="wheel", pulse_mode=True)
+            self.spinner.pulse(True)
+            self.spinner.show()
+            hbox.pack_end(self.spinner)
+
+            self.hlabel = Label(hbox, text="Reading archive, please wait...")
+            self.hlabel.show()
+            hbox.pack_end(self.hlabel)
+
             # list with file content
             self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
                                   size_hint_align=FILL_BOTH)
 
             cmd = LIST_MAP.get(self.mime_type)+' '+self.fname
-            self.command_execute(cmd)
+            self.command_execute_list(cmd)
             self.file_list.show()
             vbox.pack_end(self.file_list)
 
@@ -147,7 +162,7 @@ class MainWin(StandardWindow):
             self.pbar.show()
 
             # extract button
-            self.btn1 = Button(self, text='extract')
+            self.btn1 = Button(self, text='extract', disabled=True)
             self.btn1.callback_clicked_add(self.extract_btn_cb)
             self.btn1.show()
             vbox.pack_end(self.btn1)
@@ -157,34 +172,45 @@ class MainWin(StandardWindow):
         self.show()
 
     def extract_btn_cb(self, btn):
-        cmd = EXTRACT_MAP.get(self.mime_type, None)
-        if cmd is None:
-            return
-        cmd = 'pv -n %s | %s ' % (self.fname, cmd)
+        cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         self.command_execute(cmd)
-        #self.btn1.disabled = False
-        elementary.exit()
+
+    def command_execute_list(self, command):
+        print("Executing: ", command)
+        exe = ecore.Exe(command,
+                        ecore.ECORE_EXE_PIPE_READ |
+                        ecore.ECORE_EXE_PIPE_READ_LINE_BUFFERED
+                        )
+        exe.on_data_event_add(self.list_stdout)
+        exe.on_del_event_add(self.list_done)
+
+    def list_stdout(self, command, event):
+        for index, item in enumerate(event.lines):
+            self.file_list.item_append(item)
+
+    def list_done(self, command, event):
+        self.spinner.pulse(False)
+        self.spinner.delete()
+        self.hlabel.text = "Archive: " + self.fname
+        self.btn1.disabled = False
 
     def command_execute(self, command):
         print("Executing: ", command)
         exe = ecore.Exe(command,
                         ecore.ECORE_EXE_PIPE_ERROR |
-                        ecore.ECORE_EXE_PIPE_ERROR_LINE_BUFFERED |
-                        ecore.ECORE_EXE_PIPE_READ |
-                        ecore.ECORE_EXE_PIPE_READ_LINE_BUFFERED
+                        ecore.ECORE_EXE_PIPE_ERROR_LINE_BUFFERED
                         )
         exe.on_error_event_add(self.execute_stderr)
-        exe.on_data_event_add(self.execute_data)
+        exe.on_del_event_add(self.execute_done)
 
     def execute_stderr(self, command, event):
         line = event.lines[0]
         progress = float(line)
         self.pbar.value = progress / 100
 
-    def execute_data(self, command, event):
-        for index, item in enumerate(event.lines):
-            self.file_list.item_append(item)
+    def execute_done(self, command, event):
+        elementary.exit()
 
 
 if __name__ == "__main__":
