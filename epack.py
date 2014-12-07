@@ -79,6 +79,26 @@ EXTRACT_MAP = {
 	'application/Z': 'bsdtar -xf -'
 }
 
+LIST_MAP = {
+    'application/tar.gz': 'bsdtar -tf',
+	'application/x-gzip': 'bsdtar -tf',
+	'application/bz2': 'bsdtar -tf',
+	'application/x-bz2': 'bsdtar -tf',
+	'application/rar': 'bsdtar -tf',
+	'application/x-rar': 'bsdtar -tf',
+	'application/gz': 'bsdtar -tf',
+	'application/x-gz': 'gbsdtar -tf',
+	'application/tar': 'bsdtar -tf',
+	'application/x-tar': 'bsdtar -tf',
+	'application/tbz2': 'bsdtar -tf',
+	'application/tar.bz2': 'bsdtar -tf',
+	'application/tgz': 'bsdtar -tf',
+	'application/x-tgz': 'bsdtar -tf',
+	'application/zip': 'bsdtar -tf',
+	'application/x-zip': 'bsdtar -tf',
+	'application/Z': 'bsdtar -tf'
+}
+
 USAGE = """epack.py %s
 Usage: epack.py <archive_to_extract>
 """ % __description__
@@ -114,9 +134,9 @@ class MainWin(StandardWindow):
             # list with file content
             self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
                                   size_hint_align=FILL_BOTH)
-            # FIXME:
-            # This will fail... go with LIST_MAP{....}
-            self.command_execute('bsdtar -tf '+self.fname)
+
+            cmd = LIST_MAP.get(self.mime_type)+' '+self.fname
+            self.command_execute(cmd)
             self.file_list.show()
             vbox.pack_end(self.file_list)
 
