@@ -131,6 +131,21 @@ class MainWin(StandardWindow):
             self.resize_object_add(vbox)
             vbox.show()
 
+            # header lable + spinner
+            hbox = Box(self, horizontal=True, align=(0.0, 0.0),
+                       size_hint_weight=EXPAND_HORIZ, size_hint_align=FILL_HORIZ)
+            hbox.show()
+            vbox.pack_end(hbox)
+
+            self.spinner = Progressbar(hbox, style="wheel", pulse_mode=True)
+            self.spinner.pulse(True)
+            self.spinner.show()
+            hbox.pack_end(self.spinner)
+
+            self.hlabel = Label(hbox, text="Reading archive, please wait...")
+            self.hlabel.show()
+            hbox.pack_end(self.hlabel)
+
             # list with file content
             self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
                                   size_hint_align=FILL_BOTH)
@@ -147,7 +162,7 @@ class MainWin(StandardWindow):
             self.pbar.show()
 
             # extract button
-            self.btn1 = Button(self, text='extract')
+            self.btn1 = Button(self, text='extract', disabled=True)
             self.btn1.callback_clicked_add(self.extract_btn_cb)
             self.btn1.show()
             vbox.pack_end(self.btn1)
@@ -176,6 +191,7 @@ class MainWin(StandardWindow):
                         )
         exe.on_error_event_add(self.execute_stderr)
         exe.on_data_event_add(self.execute_data)
+        exe.on_del_event_add(self.execute_done)
 
     def execute_stderr(self, command, event):
         line = event.lines[0]
@@ -185,6 +201,12 @@ class MainWin(StandardWindow):
     def execute_data(self, command, event):
         for index, item in enumerate(event.lines):
             self.file_list.item_append(item)
+
+    def execute_done(self, command, event):
+        self.spinner.pulse(False)
+        self.spinner.delete()
+        self.hlabel.text = "Archive: " + self.fname
+        self.btn1.disabled = False
 
 
 if __name__ == "__main__":
