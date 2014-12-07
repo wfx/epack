@@ -172,10 +172,7 @@ class MainWin(StandardWindow):
         self.show()
 
     def extract_btn_cb(self, btn):
-        cmd = EXTRACT_MAP.get(self.mime_type, None)
-        if cmd is None:
-            return
-        cmd = 'pv -n %s | %s ' % (self.fname, cmd)
+        cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         self.command_execute(cmd)
 
