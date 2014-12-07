@@ -43,6 +43,8 @@ try:
     from efl.elementary.label import Label
     from efl.elementary.list import List
     from efl.elementary.button import Button
+    from efl.elementary.check import Check
+    from efl.elementary.fileselector_button import FileselectorButton
     from efl.elementary.progressbar import Progressbar
     from efl.elementary.panel import Panel, ELM_PANEL_ORIENT_LEFT
     from efl import ecore
@@ -124,7 +126,7 @@ class MainWin(StandardWindow):
             vbox.show()
 
             # header lable + spinner
-            hbox = Box(self, horizontal=True, align=(0.0, 0.0),
+            hbox = Box(self, horizontal=True,
                        size_hint_weight=EXPAND_HORIZ, size_hint_align=FILL_HORIZ)
             hbox.show()
             vbox.pack_end(hbox)
@@ -153,6 +155,16 @@ class MainWin(StandardWindow):
             vbox.pack_end(self.pbar)
             self.pbar.show()
 
+            # files selector button
+            self.fsb = FileselectorButton(self,
+                                          text="Select folder",
+                                          inwin_mode=False,
+                                          expandable=True,
+                                          folder_only=True)
+            self.fsb.callback_file_chosen_add(self.chosen_folder_cb)
+            vbox.pack_end(self.fsb)
+            self.fsb.show()
+
             # extract button
             self.btn1 = Button(self, text='extract', disabled=True)
             self.btn1.callback_clicked_add(self.extract_btn_cb)
@@ -163,7 +175,14 @@ class MainWin(StandardWindow):
         self.resize(300, 200)
         self.show()
 
+    def chosen_folder_cb(self, fs, folder):
+        self.fsb.text = folder
+
     def extract_btn_cb(self, btn):
+        # TODO: maybe this way
+        # 1, check if achrive in target folder
+        # 2, if not then move it.
+        # 3, extract it.
         cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         self.command_execute(cmd)
