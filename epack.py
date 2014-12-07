@@ -60,43 +60,35 @@ FILL_HORIZ = EVAS_HINT_FILL, 0.0
 # the extracting application needs support to read from stdin.
 # and bsdtar is great at all.
 EXTRACT_MAP = {
-    'application/tar.gz': 'bsdtar -xf -',
-	'application/x-gzip': 'bsdtar -xf -',
-	'application/bz2': 'bsdtar -xf -',
-	'application/x-bz2': 'bsdtar -xf -',
-	'application/rar': 'bsdtar -xf -',
-	'application/x-rar': 'bsdtar -xf -',
-	'application/gz': 'bsdtar -xf -',
-	'application/x-gz': 'gbsdtar -xf -',
-	'application/tar': 'bsdtar -xf -',
-	'application/x-tar': 'bsdtar -xf -',
-	'application/tbz2': 'bsdtar -xf -',
-	'application/tar.bz2': 'bsdtar -xf -',
-	'application/tgz': 'bsdtar -xf -',
-	'application/x-tgz': 'bsdtar -xf -',
-	'application/zip': 'bsdtar -xf -',
-	'application/x-zip': 'bsdtar -xf -',
-	'application/Z': 'bsdtar -xf -'
+	'application/gzip': 'bsdtar -xf -','application/x-gzip': 'bsdtar -xf -',
+	'application/bzip2': 'bsdtar -xf -','application/x-bzip2': 'bsdtar -xf -',
+	'application/bz2': 'bsdtar -xf -','application/x-bz2': 'bsdtar -xf -',
+	'application/rar': 'bsdtar -xf -','application/x-rar': 'bsdtar -xf -',
+	'application/gz': 'bsdtar -xf -','application/x-gz': 'gbsdtar -xf -',
+	'application/tar': 'bsdtar -xf -','application/x-tar': 'bsdtar -xf -',
+	'application/tbz2': 'bsdtar -xf -','application/x-tbz2': 'bsdtar -xf -',
+	'application/tar.bz2': 'bsdtar -xf -','application/x-tar.bz2': 'bsdtar -xf -',
+    'application/tar.gz': 'bsdtar -xf -','application/x-tar.gz': 'bsdtar -xf -',
+	'application/tgz': 'bsdtar -xf -','application/x-tgz': 'bsdtar -xf -',
+	'application/zip': 'bsdtar -xf -','application/x-zip': 'bsdtar -xf -',
+	'application/Z': 'bsdtar -xf -','application/x-Z': 'bsdtar -xf -',
+	'application/iso9660-image': 'bsdtar -xf -','application/x-iso9660-image': 'bsdtar -xf -'
 }
 
 LIST_MAP = {
-    'application/tar.gz': 'bsdtar -tf',
-	'application/x-gzip': 'bsdtar -tf',
-	'application/bz2': 'bsdtar -tf',
-	'application/x-bz2': 'bsdtar -tf',
-	'application/rar': 'bsdtar -tf',
-	'application/x-rar': 'bsdtar -tf',
-	'application/gz': 'bsdtar -tf',
-	'application/x-gz': 'gbsdtar -tf',
-	'application/tar': 'bsdtar -tf',
-	'application/x-tar': 'bsdtar -tf',
-	'application/tbz2': 'bsdtar -tf',
-	'application/tar.bz2': 'bsdtar -tf',
-	'application/tgz': 'bsdtar -tf',
-	'application/x-tgz': 'bsdtar -tf',
-	'application/zip': 'bsdtar -tf',
-	'application/x-zip': 'bsdtar -tf',
-	'application/Z': 'bsdtar -tf'
+	'application/gzip': 'bsdtar -tf','application/x-gzip': 'bsdtar -tf',
+	'application/bzip2': 'bsdtar -tf','application/x-bzip2': 'bsdtar -tf',
+	'application/bz2': 'bsdtar -tf','application/x-bz2': 'bsdtar -tf',
+	'application/rar': 'bsdtar -tf','application/x-rar': 'bsdtar -tf',
+	'application/gz': 'bsdtar -tf','application/x-gz': 'gbsdtar -tf',
+	'application/tar': 'bsdtar -tf','application/x-tar': 'bsdtar -tf',
+	'application/tbz2': 'bsdtar -tf','application/x-tbz2': 'bsdtar -tf',
+    'application/tar.gz': 'bsdtar -tf','application/x-tar.gz': 'bsdtar -tf',
+	'application/tar.bz2': 'bsdtar -tf','application/x-tar.bz2': 'bsdtar -tf',
+	'application/tgz': 'bsdtar -tf','application/x-tgz': 'bsdtar -tf',
+	'application/zip': 'bsdtar -tf','application/x-zip': 'bsdtar -tf',
+	'application/Z': 'bsdtar -tf','application/x-Z': 'bsdtar -tf',
+	'application/iso9660-image': 'bsdtar -tf -','application/x-iso9660-image': 'bsdtar -tf -'
 }
 
 USAGE = """epack.py %s
