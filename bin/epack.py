@@ -106,7 +106,7 @@ class MainWin(StandardWindow):
         self.cdata = list()
 
         # the window
-        StandardWindow.__init__(self, 'epack', 'Epack')
+        StandardWindow.__init__(self, 'epack.py', 'Epack')
         self.autodel_set(True)
         self.callback_delete_request_add(lambda o: elementary.exit())
 
