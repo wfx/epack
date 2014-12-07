@@ -184,7 +184,7 @@ class MainWin(StandardWindow):
     def list_done(self, command, event):
         self.spinner.pulse(False)
         self.spinner.delete()
-        self.hlabel.text = "Archive: " + self.fname
+        self.hlabel.text = "Archive: " + os.path.basename(self.fname)
         self.btn1.disabled = False
 
     def command_execute(self, command):
