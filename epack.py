@@ -41,8 +41,10 @@ try:
     from efl.elementary.frame import Frame
     from efl.elementary.icon import Icon
     from efl.elementary.label import Label
+    from efl.elementary.entry import Entry
     from efl.elementary.list import List
     from efl.elementary.button import Button
+    from efl.elementary.table import Table
     from efl.elementary.check import Check
     from efl.elementary.fileselector_button import FileselectorButton
     from efl.elementary.progressbar import Progressbar
@@ -106,6 +108,7 @@ class MainWin(StandardWindow):
     def __init__(self, fname, mime):
         self.fname = fname
         self.mime_type = mime
+        self.dest_folder = os.path.dirname(fname)
         self.cdata = list()
 
         # the window
@@ -125,60 +128,81 @@ class MainWin(StandardWindow):
             self.resize_object_add(vbox)
             vbox.show()
 
-            # header lable + spinner
-            hbox = Box(self, horizontal=True,
-                       size_hint_weight=EXPAND_HORIZ, size_hint_align=FILL_HORIZ)
-            hbox.show()
+            ### header horiz box
+            hbox = Box(self, horizontal=True, size_hint_weight=EXPAND_HORIZ,
+                       size_hint_align=FILL_HORIZ)
             vbox.pack_end(hbox)
+            hbox.show()
 
+            # spinner
             self.spinner = Progressbar(hbox, style="wheel", pulse_mode=True)
             self.spinner.pulse(True)
             self.spinner.show()
             hbox.pack_end(self.spinner)
 
-            self.hlabel = Label(hbox, text="Reading archive, please wait...")
+            # info entry
+            self.hlabel = Entry(hbox, editable=False,
+                                text="Reading archive, please wait...",
+                                size_hint_weight=EXPAND_HORIZ,
+                                size_hint_align=FILL_HORIZ)
             self.hlabel.show()
             hbox.pack_end(self.hlabel)
 
             # list with file content
             self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
                                   size_hint_align=FILL_BOTH)
-
             cmd = LIST_MAP.get(self.mime_type)+' '+self.fname
             self.command_execute_list(cmd)
             self.file_list.show()
             vbox.pack_end(self.file_list)
 
-            # progress bar
-            self.pbar = Progressbar(self, size_hint_weight=EXPAND_HORIZ,
-                                    size_hint_align=FILL_HORIZ)
-            vbox.pack_end(self.pbar)
-            self.pbar.show()
+            ### footer table
+            table = Table(self, size_hint_weight=EXPAND_HORIZ,
+                                size_hint_align=FILL_HORIZ)
+            vbox.pack_end(table)
+            table.show()
 
-            # files selector button
-            self.fsb = FileselectorButton(self,
-                                          inwin_mode=False,
-                                          expandable=True,
-                                          folder_only=True)
-            self.fsb.text = os.path.dirname(self.fname)
+            # fsb
+            icon = Icon(self, standard='folder')#, size_hint_min=(20,20))
+            self.fsb = FileselectorButton(self, inwin_mode=False,
+                                          folder_only=True, content=icon,
+                                          size_hint_align=FILL_HORIZ)
             self.fsb.callback_file_chosen_add(self.chosen_folder_cb)
-            vbox.pack_end(self.fsb)
+            table.pack(self.fsb, 0, 0, 1, 1)
             self.fsb.show()
 
+            # delete archive checkbox
+            self.del_chk = Check(hbox, text="Delete archive after extraction",
+                                 size_hint_weight=EXPAND_HORIZ,
+                                 size_hint_align=(0.0, 1.0))
+            table.pack(self.del_chk, 1, 0, 1, 1)
+            self.del_chk.show()
+
             # extract button
-            self.btn1 = Button(self, text='extract', disabled=True)
+            self.btn1 = Button(self, text='Extract', disabled=True)
             self.btn1.callback_clicked_add(self.extract_btn_cb)
+            table.pack(self.btn1, 0, 1, 1, 1)
             self.btn1.show()
-            vbox.pack_end(self.btn1)
+
+            # progress bar
+            self.pbar = Progressbar(self, size_hint_weight=EXPAND_HORIZ,
+                                    size_hint_align=(-1.0, 0.5))
+            table.pack(self.pbar, 1, 1, 1, 1)
+            self.pbar.show()
 
         # show the window
         self.resize(300, 200)
         self.show()
 
+    def update_header(self):
+        self.hlabel.text = "<b>Archive:</b> %s<br><b>Destination:</b> %s" % (
+                            os.path.basename(self.fname), self.dest_folder)
+
     def chosen_folder_cb(self, fs, folder):
         if folder:
-            self.fsb.text = folder
             os.chdir(folder)
+            self.dest_folder = folder
+            self.update_header()
 
     def extract_btn_cb(self, btn):
         cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
@@ -201,8 +225,8 @@ class MainWin(StandardWindow):
     def list_done(self, command, event):
         self.spinner.pulse(False)
         self.spinner.delete()
-        self.hlabel.text = "Archive: " + os.path.basename(self.fname)
         self.btn1.disabled = False
+        self.update_header()
 
     def command_execute(self, command):
         print("Executing: ", command)
