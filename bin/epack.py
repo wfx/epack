@@ -41,6 +41,7 @@ try:
     from efl.elementary.table import Table
     from efl.elementary.check import Check
     from efl.elementary.fileselector_button import FileselectorButton
+    from efl.elementary.fileselector import Fileselector
     from efl.elementary.progressbar import Progressbar
     from efl.elementary.panel import Panel, ELM_PANEL_ORIENT_LEFT
     from efl import ecore
@@ -89,9 +90,6 @@ LIST_MAP = {
 	'application/iso9660-image': 'bsdtar -tf -','application/x-iso9660-image': 'bsdtar -tf -'
 }
 
-USAGE = """epack.py %s
-Usage: epack.py <archive_to_extract>
-""" % __description__
 
 def mime_type_query(fname):
     m = magic.open(magic.MAGIC_MIME_TYPE)
@@ -99,9 +97,9 @@ def mime_type_query(fname):
     return m.file(fname)
 
 class MainWin(StandardWindow):
-    def __init__(self, fname, mime):
+    def __init__(self, fname):
         self.fname = fname
-        self.mime_type = mime
+        self.mime_type = mime_type_query(fname)
         self.dest_folder = os.path.dirname(fname)
         self.cdata = list()
 
@@ -111,7 +109,7 @@ class MainWin(StandardWindow):
         self.callback_delete_request_add(lambda o: elementary.exit())
 
 
-        if not EXTRACT_MAP.get(mime):
+        if not EXTRACT_MAP.get(self.mime_type):
             errlb = Label(self)
             errlb.text_set("Mimetype: "+self.mime_type+" is not supported")
             errwin = InnerWindow(self, content=errlb)
@@ -242,18 +240,46 @@ class MainWin(StandardWindow):
         elementary.exit()
 
 
+class FileChooserWin(StandardWindow):
+    def __init__(self):
+        StandardWindow.__init__(self, 'epack.py', 'Choose an archive')
+        self.autodel_set(True)
+        self.callback_delete_request_add(lambda o: elementary.exit())
+
+        fs = Fileselector(self, expandable=False,
+                          path=os.path.expanduser('~'),
+                          size_hint_weight=EXPAND_BOTH,
+                          size_hint_align=FILL_BOTH)
+        fs.callback_done_add(self.done_cb)
+        fs.mime_types_filter_append(EXTRACT_MAP.keys(), 'Archive files')
+        fs.mime_types_filter_append(['*'], 'All files')
+        fs.show()
+
+        self.resize_object_add(fs)
+        self.resize(300, 400)
+        self.show()
+
+    def done_cb(self, fs, path):
+        if path is None:
+            elementary.exit()
+            return
+
+        if not os.path.isdir(path):
+            MainWin(path)
+            self.delete()
+
+
 if __name__ == "__main__":
 
-    if len(sys.argv) != 2:
-        print(USAGE)
-        sys.exit(1)
-
-    fname = sys.argv[1]
-    fname = os.path.abspath(fname.replace("file://",""))
-    mime = mime_type_query(fname)
-
     elementary.init()
-    MainWin(fname, mime)
+    elementary.need.need_efreet()
+
+    if len(sys.argv) < 2:
+        FileChooserWin()
+    else:
+        fname = sys.argv[1]
+        fname = os.path.abspath(fname.replace("file://",""))
+        MainWin(fname)
 
     elementary.run()
     elementary.shutdown()
