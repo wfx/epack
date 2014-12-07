@@ -157,10 +157,10 @@ class MainWin(StandardWindow):
 
             # files selector button
             self.fsb = FileselectorButton(self,
-                                          text="Select folder",
                                           inwin_mode=False,
                                           expandable=True,
                                           folder_only=True)
+            self.fsb.text = os.path.dirname(self.fname)
             self.fsb.callback_file_chosen_add(self.chosen_folder_cb)
             vbox.pack_end(self.fsb)
             self.fsb.show()
