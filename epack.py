@@ -181,15 +181,6 @@ class MainWin(StandardWindow):
             os.chdir(folder)
 
     def extract_btn_cb(self, btn):
-        # TODO: maybe this way
-        # 1, check if achrive in target folder
-        # 2, if not then move it.
-        # 3, extract it.
-        if os.path.isfile(self.fsb.text+"/"+os.path.basename(self.fname)):
-            print("File exist")
-        else:
-            print("mv it first!")
-
         cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         self.command_execute(cmd)
@@ -238,8 +229,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     fname = sys.argv[1]
-    fname = fname.replace("file://","")
-    fname = os.path.abspath(fname)
+    fname = os.path.abspath(fname.replace("file://",""))
     mime = mime_type_query(fname)
 
     elementary.init()
