@@ -178,8 +178,6 @@ class MainWin(StandardWindow):
         cmd = 'pv -n %s | %s ' % (self.fname, cmd)
         self.btn1.disabled = True
         self.command_execute(cmd)
-        #self.btn1.disabled = False
-        elementary.exit()
 
     def command_execute_list(self, command):
         print("Executing: ", command)
@@ -207,11 +205,15 @@ class MainWin(StandardWindow):
                         ecore.ECORE_EXE_PIPE_ERROR_LINE_BUFFERED
                         )
         exe.on_error_event_add(self.execute_stderr)
+        exe.on_del_event_add(self.execute_done)
 
     def execute_stderr(self, command, event):
         line = event.lines[0]
         progress = float(line)
         self.pbar.value = progress / 100
+
+    def execute_done(self, command, event):
+        elementary.exit()
 
 
 if __name__ == "__main__":
