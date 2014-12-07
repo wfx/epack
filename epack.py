@@ -176,13 +176,11 @@ class MainWin(StandardWindow):
         self.show()
 
     def chosen_folder_cb(self, fs, folder):
-        self.fsb.text = folder
+        if folder:
+            self.fsb.text = folder
+            os.chdir(folder)
 
     def extract_btn_cb(self, btn):
-        # TODO: maybe this way
-        # 1, check if achrive in target folder
-        # 2, if not then move it.
-        # 3, extract it.
         cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         self.command_execute(cmd)
