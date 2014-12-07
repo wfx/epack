@@ -243,6 +243,8 @@ class MainWin(StandardWindow):
         self.pbar.value = progress / 100
 
     def execute_done(self, command, event):
+        if self.del_chk.state == True:
+            os.remove(self.fname)
         elementary.exit()
 
 
