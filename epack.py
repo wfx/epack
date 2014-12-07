@@ -79,6 +79,10 @@ EXTRACT_MAP = {
 	'application/Z': 'bsdtar -xf -'
 }
 
+USAGE = """epack.py %s
+Usage: epack.py <archive_to_extract>
+""" % __description__
+
 def mime_type_query(fname):
     m = magic.open(magic.MAGIC_MIME_TYPE)
     m.load()
@@ -164,6 +168,10 @@ class MainWin(StandardWindow):
 
 
 if __name__ == "__main__":
+
+    if len(sys.argv) != 2:
+        print(USAGE)
+        sys.exit(1)
 
     fname = sys.argv[1]
     fname = fname.replace("file://","")
