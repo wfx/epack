@@ -232,6 +232,7 @@ if __name__ == "__main__":
 
     fname = sys.argv[1]
     fname = fname.replace("file://","")
+    fname = os.path.abspath(fname)
     mime = mime_type_query(fname)
 
     elementary.init()
