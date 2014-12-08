@@ -1,7 +1,7 @@
 epack
 =====
 
-epack is a tiny file extractor
+![icon](https://github.com/wfx/epack/blob/master/data/epack_64.png) epack is a tiny file extractor
 
 ![Screenshot](https://github.com/wfx/epack/blob/master/data/screenshot.jpg)
 
