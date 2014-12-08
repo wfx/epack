@@ -211,7 +211,7 @@ class MainWin(StandardWindow):
         exe.on_del_event_add(self.list_done)
 
     def list_stdout(self, command, event):
-        for index, item in enumerate(event.lines):
+        for item in event.lines:
             self.file_list.item_append(item)
 
     def list_done(self, command, event):
