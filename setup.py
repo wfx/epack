@@ -14,6 +14,6 @@ setup(
     data_files = [
         ('share/applications', ['data/epack.desktop']),
         ('share/icons', ['data/epack.png']),
-        ('share/icons/hicolor/256x256/apps', ['data/epack.png']),
+        ('share/icons/hicolor/256x256/apps', ['data/epack_256.png']),
     ]
 )
