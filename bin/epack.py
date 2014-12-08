@@ -251,7 +251,7 @@ class FileChooserWin(StandardWindow):
                           size_hint_weight=EXPAND_BOTH,
                           size_hint_align=FILL_BOTH)
         fs.callback_done_add(self.done_cb)
-        fs.mime_types_filter_append(EXTRACT_MAP.keys(), 'Archive files')
+        fs.mime_types_filter_append(list(EXTRACT_MAP.keys()), 'Archive files')
         fs.mime_types_filter_append(['*'], 'All files')
         fs.show()
 
