@@ -71,6 +71,7 @@ EXTRACT_MAP = {
 	'application/tgz': 'bsdtar -xf -','application/x-tgz': 'bsdtar -xf -',
 	'application/zip': 'bsdtar -xf -','application/x-zip': 'bsdtar -xf -',
 	'application/Z': 'bsdtar -xf -','application/x-Z': 'bsdtar -xf -',
+    'application/xz': 'bsdtar -xf -','application/x-xz': 'bsdtar -xf -',
 	'application/iso9660-image': 'bsdtar -xf -','application/x-iso9660-image': 'bsdtar -xf -'
 }
 
@@ -87,6 +88,7 @@ LIST_MAP = {
 	'application/tgz': 'bsdtar -tf','application/x-tgz': 'bsdtar -tf',
 	'application/zip': 'bsdtar -tf','application/x-zip': 'bsdtar -tf',
 	'application/Z': 'bsdtar -tf','application/x-Z': 'bsdtar -tf',
+    'application/xz': 'bsdtar -tf','application/x-xz': 'bsdtar -tf',
 	'application/iso9660-image': 'bsdtar -tf -','application/x-iso9660-image': 'bsdtar -tf -'
 }
 
@@ -143,7 +145,8 @@ class MainWin(StandardWindow):
             # list with file content
             self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
                                   size_hint_align=FILL_BOTH)
-            cmd = LIST_MAP.get(self.mime_type)+' '+self.fname
+
+            cmd = '%s "%s"' % (LIST_MAP.get(self.mime_type),self.fname)
             self.command_execute_list(cmd)
             self.file_list.show()
             vbox.pack_end(self.file_list)
@@ -197,7 +200,7 @@ class MainWin(StandardWindow):
             self.update_header()
 
     def extract_btn_cb(self, btn):
-        cmd = 'pv -n %s | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
+        cmd = 'pv -n "%s" | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         self.command_execute(cmd)
 
