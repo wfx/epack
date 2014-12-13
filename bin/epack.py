@@ -103,7 +103,6 @@ class MainWin(StandardWindow):
         self.fname = fname
         self.mime_type = mime_type_query(fname)
         self.dest_folder = os.path.dirname(fname)
-        self.cdata = list()
 
         # the window
         StandardWindow.__init__(self, 'epack.py', 'Epack')
@@ -145,9 +144,7 @@ class MainWin(StandardWindow):
             # list with file content
             self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
                                   size_hint_align=FILL_BOTH)
-
-            cmd = '%s "%s"' % (LIST_MAP.get(self.mime_type),self.fname)
-            self.command_execute_list(cmd)
+            backend.list_content(self.fname, self.mime_type, self.list_done_cb)
             self.file_list.show()
             vbox.pack_end(self.file_list)
 
@@ -202,56 +199,35 @@ class MainWin(StandardWindow):
 
     def chosen_folder_cb(self, fs, folder):
         if folder:
-            os.chdir(folder)
             self.dest_folder = folder
             self.update_header()
 
     def extract_btn_cb(self, btn):
-        cmd = 'pv -n "%s" | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
         if self.create_folder_chk.state == True:
             folder = os.path.basename(self.fname)
-            os.mkdir(folder)
-            os.chdir(folder)
-        self.command_execute(cmd)
+            self.dest_folder = os.path.join(self.dest_folder, folder)
+            os.mkdir(self.dest_folder)
 
-    def command_execute_list(self, command):
-        print("Executing: ", command)
-        exe = ecore.Exe(command,
-                        ecore.ECORE_EXE_PIPE_READ |
-                        ecore.ECORE_EXE_PIPE_READ_LINE_BUFFERED
-                        )
-        exe.on_data_event_add(self.list_stdout)
-        exe.on_del_event_add(self.list_done)
+        backend.extract(self.fname, self.mime_type, self.dest_folder,
+                        self.extract_progress_cb)
 
-    def list_stdout(self, command, event):
-        for item in event.lines:
-            self.file_list.item_append(item)
-
-    def list_done(self, command, event):
+    def list_done_cb(self, file_list):
+        for f in file_list:
+            self.file_list.item_append(f)
+        self.file_list.go()
         self.spinner.pulse(False)
         self.spinner.delete()
         self.btn1.disabled = False
         self.update_header()
 
-    def command_execute(self, command):
-        print("Executing: ", command)
-        exe = ecore.Exe(command,
-                        ecore.ECORE_EXE_PIPE_ERROR |
-                        ecore.ECORE_EXE_PIPE_ERROR_LINE_BUFFERED
-                        )
-        exe.on_error_event_add(self.execute_stderr)
-        exe.on_del_event_add(self.execute_done)
-
-    def execute_stderr(self, command, event):
-        line = event.lines[0]
-        progress = float(line)
-        self.pbar.value = progress / 100
-
-    def execute_done(self, command, event):
-        if self.del_chk.state == True:
-            os.remove(self.fname)
-        elementary.exit()
+    def extract_progress_cb(self, progress):
+        if progress == 'done':
+            if self.del_chk.state == True:
+                os.remove(self.fname)
+            elementary.exit()
+        else:
+            self.pbar.value = progress
 
 
 class FileChooserWin(StandardWindow):
@@ -283,10 +259,43 @@ class FileChooserWin(StandardWindow):
             self.delete()
 
 
+class BashBackend(object):
+    def list_content(self, archive_file, mime_type, done_cb):
+        self._contents = list()
+        cmd = '%s "%s"' % (LIST_MAP.get(mime_type), archive_file)
+        exe = ecore.Exe(cmd, ecore.ECORE_EXE_PIPE_READ |
+                             ecore.ECORE_EXE_PIPE_READ_LINE_BUFFERED)
+        exe.on_data_event_add(self._list_stdout)
+        exe.on_del_event_add(self._list_done, done_cb)
+
+    def extract(self, archive_file, mime_type, destination, progress_cb):
+        os.chdir(destination)
+        cmd = 'pv -n "%s" | %s ' % (archive_file, EXTRACT_MAP.get(mime_type))
+        exe = ecore.Exe(cmd, ecore.ECORE_EXE_PIPE_ERROR |
+                             ecore.ECORE_EXE_PIPE_ERROR_LINE_BUFFERED)
+        exe.on_error_event_add(self._extract_stderr, progress_cb)
+        exe.on_del_event_add(self._extract_done, progress_cb)
+
+    def _list_stdout(self, command, event):
+        self._contents.extend(event.lines)
+
+    def _list_done(self, command, event, done_cb):
+        done_cb(self._contents)
+
+    def _extract_stderr(self, command, event, progress_cb):
+        progress = float(event.lines[0])
+        progress_cb(progress / 100)
+
+    def _extract_done(self, command, event, progress_cb):
+        progress_cb('done')
+
+
 if __name__ == "__main__":
 
     elementary.init()
     elementary.need.need_efreet()
+
+    backend = BashBackend()
 
     if len(sys.argv) < 2:
         FileChooserWin()
