@@ -47,7 +47,7 @@ try:
     from efl import ecore
     from efl.ecore import Exe, ECORE_EXE_PIPE_READ, ECORE_EXE_PIPE_READ_LINE_BUFFERED
 except ImportError:
-    printErr("ImportError: Please install Python-EFL:\n ", PY_EFL)
+    print("ImportError: Please install Python-EFL:\n ", PY_EFL)
     exit(1)
 
 
@@ -173,6 +173,13 @@ class MainWin(StandardWindow):
             table.pack(self.del_chk, 1, 0, 1, 1)
             self.del_chk.show()
 
+            # create archive folder
+            self.create_folder_chk = Check(hbox, text="Create archive folder.",
+                                 size_hint_weight=EXPAND_HORIZ,
+                                 size_hint_align=(0.0, 1.0))
+            table.pack(self.create_folder_chk, 2, 0, 1, 1)
+            self.create_folder_chk.show()
+
             # extract button
             self.btn1 = Button(self, text='Extract', disabled=True)
             self.btn1.callback_clicked_add(self.extract_btn_cb)
@@ -202,6 +209,10 @@ class MainWin(StandardWindow):
     def extract_btn_cb(self, btn):
         cmd = 'pv -n "%s" | %s ' % (self.fname, EXTRACT_MAP.get(self.mime_type))
         self.btn1.disabled = True
+        if self.create_folder_chk.state == True:
+            folder = os.path.basename(self.fname)
+            os.mkdir(folder)
+            os.chdir(folder)
         self.command_execute(cmd)
 
     def command_execute_list(self, command):
