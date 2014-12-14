@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-__authors__ = "Dave Andreoli (daveMDS) & Wolfgang Morawetz (wfx)"
+__authors__ = "Dave Andreoli (davemds) & Wolfgang Morawetz (wfx)"
 __copyright__ = "Copyright (C) 2014 Wolfgang Morawetz"
 __version__ = "2014.12.7.050"
 __description__ = 'A simple tool to extract any file with efm'
@@ -144,7 +144,6 @@ class MainWin(StandardWindow):
             # list with file content
             self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
                                   size_hint_align=FILL_BOTH)
-            backend.list_content(self.fname, self.mime_type, self.list_done_cb)
             self.file_list.show()
             vbox.pack_end(self.file_list)
 
@@ -188,6 +187,9 @@ class MainWin(StandardWindow):
                                     size_hint_align=(-1.0, 0.5))
             table.pack(self.pbar, 1, 1, 1, 1)
             self.pbar.show()
+
+            # ask for the archive content list
+            backend.list_content(self.fname, self.mime_type, self.list_done_cb)
 
         # show the window
         self.resize(300, 200)
@@ -260,6 +262,15 @@ class FileChooserWin(StandardWindow):
 
 
 class BashBackend(object):
+    """ This backend use pv + bsdtar to extract archives
+        Use ecore.Exe to don't block the UI.
+    """
+    name = "pv | bsdtar in an ecore.Exe"
+
+    def __init__(self):
+        # TODO backend requirement checks here
+        pass
+
     def list_content(self, archive_file, mime_type, done_cb):
         self._contents = list()
         cmd = '%s "%s"' % (LIST_MAP.get(mime_type), archive_file)
@@ -290,12 +301,197 @@ class BashBackend(object):
         progress_cb('done')
 
 
+class LibarchiveBackend(object):
+    """ This backend use the python libarchive wrapper found at:
+        https://pypi.python.org/pypi/libarchive
+
+        Use threading to don't block the UI.
+
+        NOTE: the wrapper seems not to expose the file mode so we cannot
+              appy the correct permission to the extracted files/folders
+    """
+    name = "Libarchive in a thread"
+
+    def __init__(self):
+        import libarchive.public
+        import threading
+        try:    from queue import Queue # py3
+        except: from Queue import Queue # py2
+
+        self.libarchive = libarchive.public
+        self.Thread = threading.Thread
+        self._queue = Queue()
+        self._total_size = 0
+
+    def list_content(self, archive_file, mime_type, done_cb):
+        ecore.Timer(0.1, self._check_queue, done_cb)
+        self.Thread(target=self._list_in_a_thread,
+                    args=(archive_file,)).start()
+
+    def extract(self, archive_file, mime_type, destination, progress_cb):
+        ecore.Timer(0.1, self._check_queue, progress_cb)
+        self.Thread(target=self._extract_in_a_thread,
+                    args=(archive_file, destination)).start()
+
+    def _list_in_a_thread(self, archive_file):
+        L = list()
+        self._total_size = 0
+        with self.libarchive.file_enumerator(archive_file) as archive:
+            for entry in archive:
+                L.append(entry.pathname)
+                self._total_size += entry.size
+        self._queue.put(L)
+
+    def _extract_in_a_thread(self, archive_file, destination):
+        written = 0
+        with self.libarchive.file_reader(archive_file) as archive:
+            for entry in archive:
+                # print(entry.pathname, entry.size)
+                # TODO MODE !!!!!!!!
+
+                path = os.path.join(destination, entry.pathname)
+
+                if entry.filetype.IFDIR:
+                    if not os.path.exists(path):
+                        os.mkdir(path)
+                else: # TODO test other special types
+                    with open(path, 'wb') as f:
+                        for block in entry.get_blocks():
+                            f.write(block)
+                            written += len(block)
+                            self._queue.put(float(written) / self._total_size)
+        self._queue.put('done')
+
+    def _check_queue(self, user_cb):
+        # is an item available in the queue ?
+        if self._queue.empty():
+            return ecore.ECORE_CALLBACK_RENEW
+
+        # get the last item in the queue
+        while not self._queue.empty():
+            item = self._queue.get()
+
+        # call the user callback
+        user_cb(item)
+
+        # continue or stop the timer
+        if item == 'done' or isinstance(item, list):
+            return ecore.ECORE_CALLBACK_CANCEL
+        else:
+            return ecore.ECORE_CALLBACK_RENEW
+
+
+class PythonLibarchiveBackend(object):
+    """ This backend use the python-libarchive wrapper found at:
+        https://pypi.python.org/pypi/python-libarchive
+        
+        Use multiprocessing to don't block the UI, as the wrapper doesn't
+        work well using threads.
+
+        NOTE: I'm not really sure that the multiprocessing module will not
+              clash with the ecore mainloop.
+        NOTE: python-libarchive do not work with python3 :(
+        NOTE: python-libarchive seems not really maintained :(
+    """
+    name = "Python-Libarchive in a subprocess"
+
+    def __init__(self):
+        import libarchive
+        import multiprocessing
+
+        self.libarchive = libarchive
+        self.Process = multiprocessing.Process
+        self._queue = multiprocessing.Queue()
+        self._total_size = multiprocessing.Value('L', 0)
+
+    def list_content(self, archive_file, mime_type, done_cb):
+        ecore.Timer(0.1, self._check_queue, done_cb)
+        self.Process(target=self._list_in_a_thread,
+                     args=(archive_file,)).start()
+
+    def extract(self, archive_file, mime_type, destination, progress_cb):
+        ecore.Timer(0.1, self._check_queue, progress_cb)
+        self.Process(target=self._extract_in_a_thread,
+                     args=(archive_file, destination)).start()
+
+    def _list_in_a_thread(self, archive_file):
+        L = list()
+        tot = 0
+        with self.libarchive.Archive(archive_file) as archive:
+            for entry in archive:
+                L.append(entry.pathname)
+                tot += entry.size
+        self._total_size.value = tot
+        self._queue.put(L)
+
+    def _extract_in_a_thread(self, archive_file, destination):
+        written = 0
+        tot = self._total_size.value
+        with self.libarchive.Archive(archive_file) as archive:
+            for entry in archive:
+                # print(entry.pathname, entry.size, oct(entry.mode))
+                path = os.path.join(destination, entry.pathname)
+
+                # create a folder
+                if entry.isdir():
+                    if not os.path.exists(path):
+                        os.mkdir(path)
+
+                # or write a file to disk
+                else: # TODO test other special types
+                    with open(path, 'wb') as f:
+                        for block in archive.readstream(entry.size):
+                            f.write(block)
+                            written += len(block)
+                            self._queue.put(float(written) / tot)
+
+                # apply the correct file/folder permission
+                os.chmod(path, entry.mode)
+        
+        self._queue.put('done')
+
+    def _check_queue(self, user_cb):
+        # is an item available in the queue ?
+        if self._queue.empty():
+            return ecore.ECORE_CALLBACK_RENEW
+
+        # get the last item in the queue
+        while not self._queue.empty():
+            item = self._queue.get()
+
+        # call the user callback
+        user_cb(item)
+
+        # continue or stop the timer
+        if item == 'done' or isinstance(item, list):
+            return ecore.ECORE_CALLBACK_CANCEL
+        else:
+            return ecore.ECORE_CALLBACK_RENEW
+
+
+def load_backend():
+    for backend in PythonLibarchiveBackend, LibarchiveBackend, BashBackend:
+        try:
+            instance = backend()
+            break
+        except Exception as e:
+            # print(e)
+            instance = None
+
+    if instance is None:
+        print('Cannot find a working backend')
+        exit(1)
+
+    print('Using backend: "%s"' % backend.name)
+    return instance
+    
+
 if __name__ == "__main__":
+
+    backend = load_backend()
 
     elementary.init()
     elementary.need.need_efreet()
-
-    backend = BashBackend()
 
     if len(sys.argv) < 2:
         FileChooserWin()
