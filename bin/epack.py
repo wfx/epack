@@ -261,7 +261,7 @@ class FileChooserWin(StandardWindow):
             self.delete()
 
 
-class BashBackend(object):
+class ShellBackend(object):
     """ This backend use pv + bsdtar to extract archives
         Use ecore.Exe to don't block the UI.
     """
@@ -470,7 +470,7 @@ class PythonLibarchiveBackend(object):
 
 
 def load_backend():
-    for backend in PythonLibarchiveBackend, LibarchiveBackend, BashBackend:
+    for backend in PythonLibarchiveBackend, LibarchiveBackend, ShellBackend:
         try:
             instance = backend()
             break
