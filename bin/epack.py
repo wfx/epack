@@ -187,7 +187,7 @@ class MainWin(StandardWindow):
             # progress bar
             self.pbar = Progressbar(self, size_hint_weight=EXPAND_HORIZ,
                                     size_hint_align=(-1.0, 0.5))
-            table.pack(self.pbar, 1, 1, 1, 1)
+            table.pack(self.pbar, 1, 1, 2, 1)
             self.pbar.show()
 
             # ask for the archive content list
