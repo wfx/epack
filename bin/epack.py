@@ -171,8 +171,10 @@ class MainWin(StandardWindow):
 
             # create archive folder
             self.create_folder_chk = Check(hbox, text="Create archive folder.",
-                                 size_hint_weight=EXPAND_HORIZ,
-                                 size_hint_align=(0.0, 1.0))
+                                           size_hint_weight=EXPAND_HORIZ,
+                                           size_hint_align=(0.0, 1.0))
+            self.create_folder_chk.callback_changed_add(
+                                            lambda c: self.update_header())
             table.pack(self.create_folder_chk, 2, 0, 1, 1)
             self.create_folder_chk.show()
 
@@ -196,8 +198,12 @@ class MainWin(StandardWindow):
         self.show()
 
     def update_header(self):
+        if self.create_folder_chk.state is True:
+            folder = os.path.join(self.dest_folder, os.path.basename(self.fname))
+        else:
+            folder = self.dest_folder
         self.hlabel.text = "<b>Archive:</b> %s<br><b>Destination:</b> %s" % (
-                            os.path.basename(self.fname), self.dest_folder)
+                            os.path.basename(self.fname), folder)
 
     def chosen_folder_cb(self, fs, folder):
         if folder:
