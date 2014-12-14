@@ -25,6 +25,7 @@ PY_EFL = "https://git.enlightenment.org/bindings/python/python-efl.git/"
 
 import os
 import sys
+import datetime
 import magic
 try:
     from efl.evas import EVAS_HINT_EXPAND, EVAS_HINT_FILL
@@ -97,6 +98,9 @@ def mime_type_query(fname):
     m = magic.open(magic.MAGIC_MIME_TYPE)
     m.load()
     return m.file(fname)
+
+def datetime_to_timestamp(dt):
+    return (dt - datetime.datetime.fromtimestamp(0)).total_seconds()
 
 class MainWin(StandardWindow):
     def __init__(self, fname):
@@ -352,20 +356,29 @@ class LibarchiveBackend(object):
         written = 0
         with self.libarchive.file_reader(archive_file) as archive:
             for entry in archive:
-                # print(entry.pathname, entry.size)
-                # TODO MODE !!!!!!!!
-
+                print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
                 path = os.path.join(destination, entry.pathname)
 
+                # create a folder
                 if entry.filetype.IFDIR:
                     if not os.path.exists(path):
                         os.mkdir(path)
+
+                # or write a file to disk
                 else: # TODO test other special types
                     with open(path, 'wb') as f:
                         for block in entry.get_blocks():
                             f.write(block)
                             written += len(block)
                             self._queue.put(float(written) / self._total_size)
+
+                # apply correct mtime
+                os.utime(path, (-1, datetime_to_timestamp(entry.mtime)))
+
+                # apply correct file/folder permission
+                if hasattr(entry, 'perm'): # perm added in libarchive 0.4.4
+                    os.chmod(path, entry.perm)
+
         self._queue.put('done')
 
     def _check_queue(self, user_cb):
@@ -450,6 +463,9 @@ class PythonLibarchiveBackend(object):
                             f.write(block)
                             written += len(block)
                             self._queue.put(float(written) / tot)
+
+                # apply correct mtime
+                os.utime(path, (-1, datetime_to_timestamp(entry.mtime)))
 
                 # apply the correct file/folder permission
                 os.chmod(path, entry.mode)
