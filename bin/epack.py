@@ -476,7 +476,7 @@ class PythonLibarchiveBackend(object):
 
 
 def load_backend():
-    for backend in PythonLibarchiveBackend, LibarchiveBackend, ShellBackend:
+    for backend in LibarchiveBackend, PythonLibarchiveBackend, ShellBackend:
         try:
             instance = backend()
             break
