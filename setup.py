@@ -10,6 +10,8 @@ setup(
     author = 'Wolfgang Morawetz (wfx)',
     author_email = 'wolfgang.morawetz@gmail.com',
     requires = ['efl', 'magic'],
+    provides = ['epack'],
+    packages = ['epack', 'epack.libarchive'],
     scripts = ['bin/epack'],
     data_files = [
         ('share/applications', ['data/epack.desktop']),

@@ -324,12 +324,12 @@ class LibarchiveCBackend(object):
     name = "Libarchive-C in a thread"
 
     def __init__(self):
-        from libarchive import file_reader as la_file_reader
+        import epack.libarchive
         import threading
         try:    from queue import Queue # py3
         except: from Queue import Queue # py2
 
-        self.la_file_reader = la_file_reader
+        self.libarchive = epack.libarchive
         self.Thread = threading.Thread
         self._queue = Queue()
         self._total_size = 0
@@ -347,7 +347,7 @@ class LibarchiveCBackend(object):
     def _list_in_a_thread(self, archive_file):
         L = list()
         self._total_size = 0
-        with self.la_file_reader(archive_file) as archive:
+        with self.libarchive.file_reader(archive_file) as archive:
             for entry in archive:
                 L.append(entry.pathname)
                 self._total_size += entry.size
@@ -356,7 +356,7 @@ class LibarchiveCBackend(object):
 
     def _extract_in_a_thread(self, archive_file, destination):
         written = 0
-        with self.la_file_reader(archive_file) as archive:
+        with self.libarchive.file_reader(archive_file) as archive:
             for entry in archive:
                 # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
                 print(entry.pathname, entry.size, entry.mtime)
