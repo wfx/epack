@@ -115,6 +115,7 @@ ffi('entry_new', [], c_archive_entry_p, check_null)
 
 ffi('entry_filetype', [c_archive_entry_p], c_int)
 ffi('entry_mtime', [c_archive_entry_p], c_int)
+ffi('entry_perm', [c_archive_entry_p], c_int)
 ffi('entry_pathname_w', [c_archive_entry_p], c_wchar_p)
 ffi('entry_sourcepath', [c_archive_entry_p], c_char_p)
 ffi('entry_size', [c_archive_entry_p], c_longlong)

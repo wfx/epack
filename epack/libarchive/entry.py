@@ -52,6 +52,10 @@ class ArchiveEntry(object):
         return ffi.entry_mtime(self._entry_p)
 
     @property
+    def perm(self):
+        return ffi.entry_perm(self._entry_p)
+
+    @property
     def pathname(self):
         return ffi.entry_pathname_w(self._entry_p)
 

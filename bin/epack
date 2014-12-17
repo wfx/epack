@@ -351,7 +351,6 @@ class LibarchiveCBackend(object):
             for entry in archive:
                 L.append(entry.pathname)
                 self._total_size += entry.size
-        print("TOT ", self._total_size)
         self._queue.put(L)
 
     def _extract_in_a_thread(self, archive_file, destination):
@@ -359,7 +358,6 @@ class LibarchiveCBackend(object):
         with self.libarchive.file_reader(archive_file) as archive:
             for entry in archive:
                 # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
-                print(entry.pathname, entry.size, entry.mtime)
                 path = os.path.join(destination, entry.pathname)
 
                 # create a folder
@@ -375,12 +373,9 @@ class LibarchiveCBackend(object):
                             written += len(block)
                             self._queue.put(float(written) / self._total_size)
 
-                # apply correct mtime
+                # apply correct time and permission
                 os.utime(path, (-1, entry.mtime))
-
-                # apply correct file/folder permission  # TODO in libarchive-C
-                # if hasattr(entry, 'perm'): 
-                    # os.chmod(path, entry.perm)
+                os.chmod(path, entry.perm)
 
         self._queue.put('done')
 
