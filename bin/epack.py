@@ -311,6 +311,97 @@ class ShellBackend(object):
         progress_cb('done')
 
 
+class LibarchiveCBackend(object):
+    """ This backend use the python libarchive wrapper found at:
+        https://pypi.python.org/pypi/libarchive-c/1.0
+
+        Use threading to don't block the UI.
+
+        NOTE: the wrapper seems do not to expose the file mode so we cannot
+              appy the correct permission to the extracted files/folders
+
+    """
+    name = "Libarchive-C in a thread"
+
+    def __init__(self):
+        from libarchive import file_reader as la_file_reader
+        import threading
+        try:    from queue import Queue # py3
+        except: from Queue import Queue # py2
+
+        self.la_file_reader = la_file_reader
+        self.Thread = threading.Thread
+        self._queue = Queue()
+        self._total_size = 0
+
+    def list_content(self, archive_file, mime_type, done_cb):
+        ecore.Timer(0.1, self._check_queue, done_cb)
+        self.Thread(target=self._list_in_a_thread,
+                    args=(archive_file,)).start()
+
+    def extract(self, archive_file, mime_type, destination, progress_cb):
+        ecore.Timer(0.1, self._check_queue, progress_cb)
+        self.Thread(target=self._extract_in_a_thread,
+                    args=(archive_file, destination)).start()
+
+    def _list_in_a_thread(self, archive_file):
+        L = list()
+        self._total_size = 0
+        with self.la_file_reader(archive_file) as archive:
+            for entry in archive:
+                L.append(entry.pathname)
+                self._total_size += entry.size
+        print("TOT ", self._total_size)
+        self._queue.put(L)
+
+    def _extract_in_a_thread(self, archive_file, destination):
+        written = 0
+        with self.la_file_reader(archive_file) as archive:
+            for entry in archive:
+                # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
+                print(entry.pathname, entry.size, entry.mtime)
+                path = os.path.join(destination, entry.pathname)
+
+                # create a folder
+                if entry.isdir:
+                    if not os.path.exists(path):
+                        os.mkdir(path)
+
+                # or write a file to disk
+                else: # TODO test other special types
+                    with open(path, 'wb') as f:
+                        for block in entry.get_blocks():
+                            f.write(block)
+                            written += len(block)
+                            self._queue.put(float(written) / self._total_size)
+
+                # apply correct mtime
+                os.utime(path, (-1, entry.mtime))
+
+                # apply correct file/folder permission  # TODO in libarchive-C
+                # if hasattr(entry, 'perm'): 
+                    # os.chmod(path, entry.perm)
+
+        self._queue.put('done')
+
+    def _check_queue(self, user_cb):
+        # is an item available in the queue ?
+        if self._queue.empty():
+            return ecore.ECORE_CALLBACK_RENEW
+
+        # get the last item in the queue
+        while not self._queue.empty():
+            item = self._queue.get()
+
+        # call the user callback
+        user_cb(item)
+
+        # continue or stop the timer
+        if item == 'done' or isinstance(item, list):
+            return ecore.ECORE_CALLBACK_CANCEL
+        else:
+            return ecore.ECORE_CALLBACK_RENEW
+
 class LibarchiveBackend(object):
     """ This backend use the python libarchive wrapper found at:
         https://pypi.python.org/pypi/libarchive
@@ -356,7 +447,7 @@ class LibarchiveBackend(object):
         written = 0
         with self.libarchive.file_reader(archive_file) as archive:
             for entry in archive:
-                print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
+                # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
                 path = os.path.join(destination, entry.pathname)
 
                 # create a folder
@@ -492,12 +583,12 @@ class PythonLibarchiveBackend(object):
 
 
 def load_backend():
-    for backend in LibarchiveBackend, PythonLibarchiveBackend, ShellBackend:
+    for backend in LibarchiveCBackend, LibarchiveBackend, PythonLibarchiveBackend, ShellBackend:
         try:
             instance = backend()
             break
         except Exception as e:
-            # print(e)
+            print(e)
             instance = None
 
     if instance is None:
