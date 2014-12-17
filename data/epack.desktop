@@ -2,8 +2,8 @@
 Name=Epack
 Comment=Extract any archive
 Keywords=zip;tar;extract;unpack;
-TryExec=epack.py
-Exec=epack.py %U
+TryExec=epack
+Exec=epack %U
 StartupNotify=true
 Terminal=false
 Type=Application
