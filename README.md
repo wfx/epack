@@ -1,4 +1,4 @@
-![icon](https://github.com/wfx/epack/blob/master/data/epack_64.png) epack
+![icon](https://github.com/wfx/epack/blob/master/data/epack.png) epack
 =====
 
 epack is a tiny file extractor
@@ -9,7 +9,9 @@ epack is a tiny file extractor
 ## Requirements ##
 
 * Python 2.7 or higher
-* python modules: efl, magic
+* python-efl >= 1.11
+* python-magic
+* Libarchive
 
 
 ## Installation ##
