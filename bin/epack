@@ -42,6 +42,7 @@ try:
     from efl.elementary.check import Check
     from efl.elementary.fileselector_button import FileselectorButton
     from efl.elementary.fileselector import Fileselector
+    from efl.elementary.popup import Popup
     from efl.elementary.progressbar import Progressbar
     from efl.elementary.panel import Panel, ELM_PANEL_ORIENT_LEFT
     from efl import ecore
@@ -206,6 +207,20 @@ class MainWin(StandardWindow):
         self.hlabel.text = "<b>Archive:</b> %s<br><b>Destination:</b> %s" % (
                             os.path.basename(self.fname), folder)
 
+    def show_error_msg(self, msg):
+        pop = Popup(self, text=msg)
+        pop.part_text_set('title,text', 'Error')
+
+        btn = Button(self, text='Continue')
+        btn.callback_clicked_add(lambda b: pop.delete())
+        pop.part_content_set('button1', btn)
+
+        btn = Button(self, text='Exit')
+        btn.callback_clicked_add(lambda b: elementary.exit())
+        pop.part_content_set('button2', btn)
+
+        pop.show()
+
     def chosen_folder_cb(self, fs, folder):
         if folder:
             self.dest_folder = folder
@@ -235,6 +250,9 @@ class MainWin(StandardWindow):
             if self.del_chk.state == True:
                 os.remove(self.fname)
             elementary.exit()
+        elif isinstance(progress, list) and progress[0] == 'error':
+            self.show_error_msg(progress[1])
+            self.btn1.disabled = False
         else:
             self.pbar.value = progress
 
@@ -349,29 +367,32 @@ class LibarchiveBackend(object):
 
     def _extract_in_a_thread(self, archive_file, destination):
         written = 0
-        with self.libarchive.file_reader(archive_file) as archive:
-            for entry in archive:
-                # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
-                path = os.path.join(destination, entry.pathname)
+        try:
+            with self.libarchive.file_reader(archive_file) as archive:
+                for entry in archive:
+                    # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
+                    path = os.path.join(destination, entry.pathname)
 
-                # create a folder
-                if entry.isdir:
-                    if not os.path.exists(path):
-                        os.mkdir(path)
+                    # create a folder
+                    if entry.isdir:
+                        if not os.path.exists(path):
+                            os.mkdir(path)
 
-                # or write a file to disk
-                else: # TODO test other special types
-                    with open(path, 'wb') as f:
-                        for block in entry.get_blocks():
-                            f.write(block)
-                            written += len(block)
-                            self._queue.put(float(written) / self._total_size)
+                    # or write a file to disk
+                    else: # TODO test other special types
+                        with open(path, 'wb') as f:
+                            for block in entry.get_blocks():
+                                f.write(block)
+                                written += len(block)
+                                self._queue.put(float(written) / self._total_size)
 
-                # apply correct time and permission
-                os.utime(path, (-1, entry.mtime))
-                os.chmod(path, entry.perm)
-
-        self._queue.put('done')
+                    # apply correct time and permission
+                    os.utime(path, (-1, entry.mtime))
+                    os.chmod(path, entry.perm)
+        except Exception as e:
+            self._queue.put(['error', str(e)])
+        else:
+            self._queue.put('done')
 
     def _check_queue(self, user_cb):
         # is an item available in the queue ?
