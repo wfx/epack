@@ -25,7 +25,6 @@ PY_EFL = "https://git.enlightenment.org/bindings/python/python-efl.git/"
 
 import os
 import sys
-import datetime
 import magic
 try:
     from efl.evas import EVAS_HINT_EXPAND, EVAS_HINT_FILL
@@ -99,8 +98,6 @@ def mime_type_query(fname):
     m.load()
     return m.file(fname)
 
-def datetime_to_timestamp(dt):
-    return (dt - datetime.datetime.fromtimestamp(0)).total_seconds()
 
 class MainWin(StandardWindow):
     def __init__(self, fname):
@@ -311,17 +308,14 @@ class ShellBackend(object):
         progress_cb('done')
 
 
-class LibarchiveCBackend(object):
-    """ This backend use the python libarchive wrapper found at:
+class LibarchiveBackend(object):
+    """ This backend use the python libarchive wrapper included in epack
+        The wrappers are a plain copy from:
         https://pypi.python.org/pypi/libarchive-c/1.0
 
         Use threading to don't block the UI.
-
-        NOTE: the wrapper seems do not to expose the file mode so we cannot
-              appy the correct permission to the extracted files/folders
-
     """
-    name = "Libarchive-C in a thread"
+    name = "Libarchive in a thread"
 
     def __init__(self):
         import epack.libarchive
@@ -399,7 +393,7 @@ class LibarchiveCBackend(object):
 
 
 def load_backend():
-    for backend in LibarchiveCBackend, ShellBackend:
+    for backend in LibarchiveBackend, ShellBackend:
         try:
             instance = backend()
             break
