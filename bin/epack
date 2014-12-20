@@ -25,28 +25,25 @@ PY_EFL = "https://git.enlightenment.org/bindings/python/python-efl.git/"
 
 import os
 import sys
-import datetime
 import magic
 try:
-    from efl.evas import EVAS_HINT_EXPAND, EVAS_HINT_FILL
+    from efl import ecore
     from efl import elementary
+    from efl.evas import EVAS_HINT_EXPAND, EVAS_HINT_FILL
     from efl.elementary.window import StandardWindow
     from efl.elementary.innerwindow import InnerWindow
     from efl.elementary.box import Box
-    from efl.elementary.frame import Frame
     from efl.elementary.icon import Icon
     from efl.elementary.label import Label
     from efl.elementary.entry import Entry
-    from efl.elementary.list import List
+    from efl.elementary.genlist import Genlist, GenlistItemClass
     from efl.elementary.button import Button
     from efl.elementary.table import Table
     from efl.elementary.check import Check
     from efl.elementary.fileselector_button import FileselectorButton
     from efl.elementary.fileselector import Fileselector
+    from efl.elementary.popup import Popup
     from efl.elementary.progressbar import Progressbar
-    from efl.elementary.panel import Panel, ELM_PANEL_ORIENT_LEFT
-    from efl import ecore
-    from efl.ecore import Exe, ECORE_EXE_PIPE_READ, ECORE_EXE_PIPE_READ_LINE_BUFFERED
 except ImportError:
     print("ImportError: Please install Python-EFL:\n ", PY_EFL)
     exit(1)
@@ -99,8 +96,16 @@ def mime_type_query(fname):
     m.load()
     return m.file(fname)
 
-def datetime_to_timestamp(dt):
-    return (dt - datetime.datetime.fromtimestamp(0)).total_seconds()
+
+def gl_text_get(obj, part, item_data):
+    return item_data
+
+def gl_fold_icon_get(obj, part, item_data):
+    return Icon(obj, standard='folder')
+
+def gl_file_icon_get(obj, part, item_data):
+    return Icon(obj, standard='file')
+
 
 class MainWin(StandardWindow):
     def __init__(self, fname):
@@ -145,11 +150,18 @@ class MainWin(StandardWindow):
             self.hlabel.show()
             hbox.pack_end(self.hlabel)
 
-            # list with file content
-            self.file_list = List(self, size_hint_weight=EXPAND_BOTH,
-                                  size_hint_align=FILL_BOTH)
-            self.file_list.show()
+            # genlist with archive content
+            self.file_itc = GenlistItemClass(item_style="one_icon",
+                                             text_get_func=gl_text_get,
+                                             content_get_func=gl_file_icon_get)
+            self.fold_itc = GenlistItemClass(item_style="one_icon",
+                                             text_get_func=gl_text_get,
+                                             content_get_func=gl_fold_icon_get)
+            self.file_list = Genlist(self, homogeneous=True,
+                                     size_hint_weight=EXPAND_BOTH,
+                                     size_hint_align=FILL_BOTH)
             vbox.pack_end(self.file_list)
+            self.file_list.show()
 
             ### footer table
             table = Table(self, size_hint_weight=EXPAND_HORIZ,
@@ -174,7 +186,7 @@ class MainWin(StandardWindow):
             self.del_chk.show()
 
             # create archive folder
-            self.create_folder_chk = Check(hbox, text="Create archive folder.",
+            self.create_folder_chk = Check(hbox, text="Create archive folder",
                                            size_hint_weight=EXPAND_HORIZ,
                                            size_hint_align=(0.0, 1.0))
             self.create_folder_chk.callback_changed_add(
@@ -209,6 +221,20 @@ class MainWin(StandardWindow):
         self.hlabel.text = "<b>Archive:</b> %s<br><b>Destination:</b> %s" % (
                             os.path.basename(self.fname), folder)
 
+    def show_error_msg(self, msg):
+        pop = Popup(self, text=msg)
+        pop.part_text_set('title,text', 'Error')
+
+        btn = Button(self, text='Continue')
+        btn.callback_clicked_add(lambda b: pop.delete())
+        pop.part_content_set('button1', btn)
+
+        btn = Button(self, text='Exit')
+        btn.callback_clicked_add(lambda b: elementary.exit())
+        pop.part_content_set('button2', btn)
+
+        pop.show()
+
     def chosen_folder_cb(self, fs, folder):
         if folder:
             self.dest_folder = folder
@@ -225,9 +251,12 @@ class MainWin(StandardWindow):
                         self.extract_progress_cb)
 
     def list_done_cb(self, file_list):
-        for f in file_list:
-            self.file_list.item_append(f)
-        self.file_list.go()
+        for fname in file_list:
+            if fname.endswith('/'):
+                self.file_list.item_append(self.fold_itc, fname)
+            else:
+                self.file_list.item_append(self.file_itc, fname)
+
         self.spinner.pulse(False)
         self.spinner.delete()
         self.btn1.disabled = False
@@ -238,6 +267,9 @@ class MainWin(StandardWindow):
             if self.del_chk.state == True:
                 os.remove(self.fname)
             elementary.exit()
+        elif isinstance(progress, list) and progress[0] == 'error':
+            self.show_error_msg(progress[1])
+            self.btn1.disabled = False
         else:
             self.pbar.value = progress
 
@@ -311,17 +343,14 @@ class ShellBackend(object):
         progress_cb('done')
 
 
-class LibarchiveCBackend(object):
-    """ This backend use the python libarchive wrapper found at:
+class LibarchiveBackend(object):
+    """ This backend use the python libarchive wrapper included in epack
+        The wrappers are a plain copy from:
         https://pypi.python.org/pypi/libarchive-c/1.0
 
         Use threading to don't block the UI.
-
-        NOTE: the wrapper seems do not to expose the file mode so we cannot
-              appy the correct permission to the extracted files/folders
-
     """
-    name = "Libarchive-C in a thread"
+    name = "Libarchive in a thread"
 
     def __init__(self):
         import epack.libarchive
@@ -355,29 +384,32 @@ class LibarchiveCBackend(object):
 
     def _extract_in_a_thread(self, archive_file, destination):
         written = 0
-        with self.libarchive.file_reader(archive_file) as archive:
-            for entry in archive:
-                # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
-                path = os.path.join(destination, entry.pathname)
+        try:
+            with self.libarchive.file_reader(archive_file) as archive:
+                for entry in archive:
+                    # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
+                    path = os.path.join(destination, entry.pathname)
 
-                # create a folder
-                if entry.isdir:
-                    if not os.path.exists(path):
-                        os.mkdir(path)
+                    # create a folder
+                    if entry.isdir:
+                        if not os.path.exists(path):
+                            os.mkdir(path)
 
-                # or write a file to disk
-                else: # TODO test other special types
-                    with open(path, 'wb') as f:
-                        for block in entry.get_blocks():
-                            f.write(block)
-                            written += len(block)
-                            self._queue.put(float(written) / self._total_size)
+                    # or write a file to disk
+                    else: # TODO test other special types
+                        with open(path, 'wb') as f:
+                            for block in entry.get_blocks():
+                                f.write(block)
+                                written += len(block)
+                                self._queue.put(float(written) / self._total_size)
 
-                # apply correct time and permission
-                os.utime(path, (-1, entry.mtime))
-                os.chmod(path, entry.perm)
-
-        self._queue.put('done')
+                    # apply correct time and permission
+                    os.utime(path, (-1, entry.mtime))
+                    os.chmod(path, entry.perm)
+        except Exception as e:
+            self._queue.put(['error', str(e)])
+        else:
+            self._queue.put('done')
 
     def _check_queue(self, user_cb):
         # is an item available in the queue ?
@@ -399,7 +431,7 @@ class LibarchiveCBackend(object):
 
 
 def load_backend():
-    for backend in LibarchiveCBackend, ShellBackend:
+    for backend in LibarchiveBackend, ShellBackend:
         try:
             instance = backend()
             break
