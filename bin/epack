@@ -143,10 +143,9 @@ class MainWin(StandardWindow):
             hbox.pack_end(self.spinner)
 
             # info entry
-            self.hlabel = Entry(hbox, editable=False,
-                                text="Reading archive, please wait...",
+            self.hlabel = Label(hbox, text="Reading archive, please wait...",
                                 size_hint_weight=EXPAND_HORIZ,
-                                size_hint_align=FILL_HORIZ)
+                                size_hint_align=(0.0, 0.5))
             self.hlabel.show()
             hbox.pack_end(self.hlabel)
 
@@ -170,28 +169,27 @@ class MainWin(StandardWindow):
             table.show()
 
             # fsb
-            icon = Icon(self, standard='folder')#, size_hint_min=(20,20))
-            self.fsb = FileselectorButton(self, inwin_mode=False,
-                                          folder_only=True, content=icon,
-                                          size_hint_align=FILL_HORIZ)
+            icon = Icon(self, standard='folder')
+            self.fsb = FileselectorButton(self, inwin_mode=False, content=icon,
+                                    folder_only=True, text=self.dest_folder,
+                                    size_hint_weight=EXPAND_HORIZ,
+                                    size_hint_align=FILL_HORIZ)
             self.fsb.callback_file_chosen_add(self.chosen_folder_cb)
-            table.pack(self.fsb, 0, 0, 1, 1)
+            table.pack(self.fsb, 0, 0, 3, 1)
             self.fsb.show()
 
             # delete archive checkbox
             self.del_chk = Check(hbox, text="Delete archive after extraction",
                                  size_hint_weight=EXPAND_HORIZ,
                                  size_hint_align=(0.0, 1.0))
-            table.pack(self.del_chk, 1, 0, 1, 1)
+            table.pack(self.del_chk, 1, 1, 1, 1)
             self.del_chk.show()
 
             # create archive folder
             self.create_folder_chk = Check(hbox, text="Create archive folder",
                                            size_hint_weight=EXPAND_HORIZ,
                                            size_hint_align=(0.0, 1.0))
-            self.create_folder_chk.callback_changed_add(
-                                            lambda c: self.update_header())
-            table.pack(self.create_folder_chk, 2, 0, 1, 1)
+            table.pack(self.create_folder_chk, 2, 1, 1, 1)
             self.create_folder_chk.show()
 
             # extract button
@@ -208,12 +206,7 @@ class MainWin(StandardWindow):
         self.show()
 
     def update_header(self):
-        if self.create_folder_chk.state is True:
-            folder = os.path.join(self.dest_folder, os.path.basename(self.fname))
-        else:
-            folder = self.dest_folder
-        self.hlabel.text = "<b>Archive:</b> %s<br><b>Destination:</b> %s" % (
-                            os.path.basename(self.fname), folder)
+        self.hlabel.text = "<b>Archive:</b> %s" % (os.path.basename(self.fname))
 
     def show_error_msg(self, msg):
         pop = Popup(self, text=msg)
@@ -229,10 +222,10 @@ class MainWin(StandardWindow):
 
         pop.show()
 
-    def chosen_folder_cb(self, fs, folder):
+    def chosen_folder_cb(self, fsb, folder):
         if folder:
             self.dest_folder = folder
-            self.update_header()
+            fsb.text = folder
 
     def extract_btn_cb(self, btn):
         if self.create_folder_chk.state == True:
