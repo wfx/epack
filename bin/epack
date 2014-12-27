@@ -33,6 +33,7 @@ try:
     from efl.elementary.window import StandardWindow
     from efl.elementary.innerwindow import InnerWindow
     from efl.elementary.box import Box
+    from efl.elementary.ctxpopup import Ctxpopup
     from efl.elementary.icon import Icon
     from efl.elementary.label import Label
     from efl.elementary.frame import Frame
@@ -113,6 +114,7 @@ class MainWin(StandardWindow):
         self.fname = fname
         self.mime_type = mime_type_query(fname)
         self.dest_folder = os.path.dirname(fname)
+        self.post_extract_action = 'close' # or 'fm' or 'term'
 
         # the window
         StandardWindow.__init__(self, 'epack.py', 'Epack')
@@ -196,10 +198,20 @@ class MainWin(StandardWindow):
             sep.show()
 
             # extract button
+            btn_box = Box(table, horizontal=True)
+            table.pack(btn_box, 0, 2, 1, 2)
+            btn_box.show()
+            
             self.btn1 = Button(table, text='Extract', disabled=True)
             self.btn1.callback_clicked_add(self.extract_btn_cb)
-            table.pack(self.btn1, 0, 2, 1, 2)
+            btn_box.pack_end(self.btn1)
             self.btn1.show()
+
+            ic = Icon(table, standard='arrow_up', size_hint_min=(17,17))
+            self.btn2 = Button(table, content=ic)
+            self.btn2.callback_clicked_add(self.extract_opts_cb)
+            btn_box.pack_end(self.btn2)
+            self.btn2.show()
 
             sep = Separator(table, horizontal=False)
             table.pack(sep, 1, 2, 1, 2)
@@ -226,6 +238,29 @@ class MainWin(StandardWindow):
         self.resize(300, 300)
         self.show()
 
+    def extract_opts_cb(self, bt):
+        ctx = Ctxpopup(self, hover_parent=self)
+        ctx.item_append('Extract and open FileManager', None,
+                        self.change_post_extract_action, 'fm')
+        ctx.item_append('Extract and open in Terminal', None,
+                        self.change_post_extract_action, 'term')
+        ctx.item_append('Extract and close', None,
+                        self.change_post_extract_action, 'close')
+        x, y, w, h = bt.geometry
+        ctx.pos = (x + w / 2, y)
+        ctx.show()
+
+    def change_post_extract_action(self, ctx, item, action):
+        self.post_extract_action = action
+        if action == 'fm':
+            self.btn1.text = 'Extract and open FileManager'
+        elif action == 'term':
+            self.btn1.text = 'Extract and open in Terminal'
+        elif action == 'close':
+            self.btn1.text = 'Extract'
+        ctx.delete()
+        
+        
     def update_header(self):
         self.hlabel.text = "<b>Archive:</b> %s" % (os.path.basename(self.fname))
 
