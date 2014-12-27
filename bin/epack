@@ -200,12 +200,6 @@ class MainWin(StandardWindow):
             table.pack(self.btn1, 0, 1, 1, 1)
             self.btn1.show()
 
-            # progress bar
-            self.pbar = Progressbar(self, size_hint_weight=EXPAND_HORIZ,
-                                    size_hint_align=(-1.0, 0.5))
-            table.pack(self.pbar, 1, 1, 2, 1)
-            self.pbar.show()
-
             # ask for the archive content list
             backend.list_content(self.fname, self.mime_type, self.list_done_cb)
 
@@ -241,14 +235,39 @@ class MainWin(StandardWindow):
             self.update_header()
 
     def extract_btn_cb(self, btn):
-        self.btn1.disabled = True
         if self.create_folder_chk.state == True:
             folder = os.path.basename(self.fname)
             self.dest_folder = os.path.join(self.dest_folder, folder)
             os.mkdir(self.dest_folder)
 
+        pp = Popup(self)
+        pp.part_text_set('title,text', 'Extracting files, please wait...')
+        pp.show()
+
+        vbox = Box(self)
+        pp.part_content_set('default', vbox)
+        vbox.show()
+
+        lb = Label(self, ellipsis=True, size_hint_weight=EXPAND_HORIZ,
+                   size_hint_align=FILL_HORIZ)
+        vbox.pack_end(lb)
+        lb.show()
+
+        pb = Progressbar(pp, size_hint_weight=EXPAND_HORIZ,
+                         size_hint_align=FILL_HORIZ)
+        vbox.pack_end(pb)
+        pb.show()
+
+        bt = Button(pp, text='Cancel', disabled=True)
+        pp.part_content_set('button1', bt)
+
+        self.prog_pbar = pb
+        self.prog_label = lb
+        self.popup = pp
+
         backend.extract(self.fname, self.mime_type, self.dest_folder,
-                        self.extract_progress_cb)
+                        self.extract_progress_cb,
+                        self.extract_done_cb)
 
     def list_done_cb(self, file_list):
         for fname in file_list:
@@ -262,16 +281,18 @@ class MainWin(StandardWindow):
         self.btn1.disabled = False
         self.update_header()
 
-    def extract_progress_cb(self, progress):
-        if progress == 'done':
+    def extract_progress_cb(self, progress, fname):
+        self.prog_pbar.value = progress
+        self.prog_label.text = fname
+
+    def extract_done_cb(self, result):
+        if result == 'success':
             if self.del_chk.state == True:
                 os.remove(self.fname)
             elementary.exit()
-        elif isinstance(progress, list) and progress[0] == 'error':
-            self.show_error_msg(progress[1])
-            self.btn1.disabled = False
         else:
-            self.pbar.value = progress
+            self.show_error_msg(result)
+            self.popup.delete()
 
 
 class FileChooserWin(StandardWindow):
@@ -364,12 +385,12 @@ class LibarchiveBackend(object):
         self._total_size = 0
 
     def list_content(self, archive_file, mime_type, done_cb):
-        ecore.Timer(0.1, self._check_queue, done_cb)
+        ecore.Timer(0.1, self._check_list_queue, done_cb)
         self.Thread(target=self._list_in_a_thread,
                     args=(archive_file,)).start()
 
-    def extract(self, archive_file, mime_type, destination, progress_cb):
-        ecore.Timer(0.1, self._check_queue, progress_cb)
+    def extract(self, archive_file, mime_type, destination, progress_cb, done_cb):
+        ecore.Timer(0.1, self._check_extract_queue, progress_cb, done_cb)
         self.Thread(target=self._extract_in_a_thread,
                     args=(archive_file, destination)).start()
 
@@ -401,33 +422,41 @@ class LibarchiveBackend(object):
                             for block in entry.get_blocks():
                                 f.write(block)
                                 written += len(block)
-                                self._queue.put(float(written) / self._total_size)
+                                perc = float(written) / self._total_size
+                                self._queue.put((perc, entry.pathname))
 
                     # apply correct time and permission
                     os.utime(path, (-1, entry.mtime))
                     os.chmod(path, entry.perm)
         except Exception as e:
-            self._queue.put(['error', str(e)])
+            self._queue.put(('error', str(e)))
         else:
-            self._queue.put('done')
+            self._queue.put(('done', 'success'))
 
-    def _check_queue(self, user_cb):
+    def _check_list_queue(self, done_cb):
+        if self._queue.empty():
+            return ecore.ECORE_CALLBACK_RENEW
+
+        done_cb(self._queue.get())
+        return ecore.ECORE_CALLBACK_CANCEL
+
+    def _check_extract_queue(self, progress_cb, done_cb):
         # is an item available in the queue ?
         if self._queue.empty():
             return ecore.ECORE_CALLBACK_RENEW
 
         # get the last item in the queue
         while not self._queue.empty():
-            item = self._queue.get()
+            item1, item2 = self._queue.get()
 
-        # call the user callback
-        user_cb(item)
-
-        # continue or stop the timer
-        if item == 'done' or isinstance(item, list):
-            return ecore.ECORE_CALLBACK_CANCEL
-        else:
+        # call the progress callback
+        if isinstance(item1, float):
+            progress_cb(item1, item2)
             return ecore.ECORE_CALLBACK_RENEW
+
+        # call the done callback
+        done_cb(item2)
+        return ecore.ECORE_CALLBACK_CANCEL
 
 
 def load_backend():
