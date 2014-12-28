@@ -27,36 +27,76 @@ except:
 from efl import elementary
 
 from epack.backend import load_backend
-from epack.gui import MainWin, ErrorWin, FileChooserWin
-from epack.utils import mime_type_query, SUPPORTED_MIME
+from epack.gui import MainWin
 
 
 
-if __name__ == "__main__":
+class EpackApplication(object):
+    def __init__(self):
+        self.file_name = None    # full path of the loaded archive
+        self.dest_folder = None  # destination folder for extract operation
+        self.backend = None      # the backend currently in use
+        self.delete_after_extract = False
+        self.quit_after_extract = True
 
-    backend = load_backend()
-    if backend is None:
-        print('Cannot find a working backend')
-        exit(1)
-    print('Using backend: "%s"' % backend.name)
+        self.main_win = MainWin(self)
 
-    elementary.init()
-    elementary.need.need_efreet()
+        if len(sys.argv) > 1:
+            self.load_file(sys.argv[1])
 
-    if len(sys.argv) < 2:
-        FileChooserWin(backend)
-    else:
-        fname = sys.argv[1]
+    def load_file(self, fname):
+        # cleanup and check file name
         if fname.startswith('file://'):
             fname = unquote(fname)[7:]
         else:
             fname = os.path.abspath(fname)
 
-        mime_type = mime_type_query(fname)
-        if not mime_type in SUPPORTED_MIME:
-            ErrorWin('Mimetype: "%s" is not supported' % mime_type)
-        else:
-            MainWin(fname, backend)
+        if not os.path.isfile(fname):
+            self.main_win.show_error_msg('Cannot read file:<br>%s' % fname)
+            return
 
+        # search a backend cabable of reading this file
+        self.backend = load_backend(fname)
+        if self.backend is None:
+            self.main_win.show_error_msg('Cannot read archive')
+            return
+
+        # start the archive listing
+        self.file_name = fname
+        self.dest_folder = os.path.dirname(fname)
+        self.backend.list_content(fname, self._list_done_cb)
+        self.main_win.update_ui(listing_in_progress=True)
+
+    def _list_done_cb(self, file_list):
+        for path in file_list:
+            self.main_win.list_item_add(path)
+        self.main_win.update_ui()
+
+    def extract_archive(self):
+        if not os.path.exists(self.dest_folder):
+            os.mkdir(self.dest_folder)
+
+        self.backend.extract(self.file_name, self.dest_folder,
+                             self._extract_progress_cb,
+                             self._extract_done_cb)
+
+    def _extract_progress_cb(self, progress, fname):
+        self.main_win.extract_progress(progress, fname)
+
+    def _extract_done_cb(self, result):
+        self.main_win.extract_finished()
+        if result == 'success':
+            if self.delete_after_extract:
+                os.remove(self.file_name)
+            if self.quit_after_extract:
+                elementary.exit()
+        else:
+            self.main_win.show_error_msg(result)
+
+
+if __name__ == "__main__":
+    elementary.init()
+    app = EpackApplication()
     elementary.run()
     elementary.shutdown()
+

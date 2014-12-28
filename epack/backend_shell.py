@@ -64,6 +64,12 @@ class ShellBackend(object):
 
     def __init__(self):
         # TODO backend requirement checks here
+
+        # mime_type = mime_type_query(fname)
+        # if not mime_type in SUPPORTED_MIME:
+            # ErrorWin('Mimetype: "%s" is not supported' % mime_type)
+        # else:
+            # MainWin(fname, backend)
         pass
 
     def list_content(self, archive_file, mime_type, done_cb):

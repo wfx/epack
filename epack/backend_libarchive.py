@@ -36,13 +36,15 @@ class LibarchiveBackend(object):
     """
     name = "Libarchive in a thread"
 
-    def __init__(self):
+    def __init__(self, fname):
         import epack.libarchive
 
         self.libarchive = epack.libarchive
         self.Thread = threading.Thread
         self._queue = Queue()
         self._total_size = 0
+
+        # TODO check if the given file is readable by this bk
 
     def list_content(self, archive_file, done_cb):
         ecore.Timer(0.1, self._check_list_queue, done_cb)

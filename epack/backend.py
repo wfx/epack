@@ -21,10 +21,10 @@ from epack.backend_libarchive import LibarchiveBackend
 from epack.backend_shell import ShellBackend
 
 
-def load_backend():
+def load_backend(fname):
     for backend in LibarchiveBackend, ShellBackend:
         try:
-            instance = backend()
+            instance = backend(fname)
             break
         except Exception as e:
             print(e)
