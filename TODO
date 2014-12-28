@@ -12,10 +12,3 @@ a chronological time.
 [000%]  Progress dialog:
 	Make the cancel button work
 
-[000%]  BashBackend:
-	Need a full revamp
-
-[000%]  LibarchiveBackend:
-	Check file on __init__
-
-

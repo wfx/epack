@@ -67,6 +67,11 @@ class EpackApplication(object):
         self.backend.list_content(fname, self._list_done_cb)
         self.main_win.update_ui(listing_in_progress=True)
 
+        # ...and print some info
+        print('Reading file: "%s"' % fname)
+        print('Destination folder: "%s"' % self.dest_folder)
+        print('Using backend: "%s"' % self.backend.name)
+
     def _list_done_cb(self, file_list):
         for path in file_list:
             self.main_win.list_item_add(path)

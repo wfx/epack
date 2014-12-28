@@ -17,7 +17,11 @@
 
 from __future__ import absolute_import, print_function
 
+import os
+
 from efl import ecore
+
+from epack.utils import mime_type_query
 
 # the extracting application needs support to read from stdin.
 # and bsdtar is great at all.
@@ -62,31 +66,29 @@ class ShellBackend(object):
     """
     name = "pv | bsdtar in an ecore.Exe"
 
-    def __init__(self):
-        # TODO backend requirement checks here
+    def __init__(self, archive_file):
 
-        # mime_type = mime_type_query(fname)
-        # if not mime_type in SUPPORTED_MIME:
-            # ErrorWin('Mimetype: "%s" is not supported' % mime_type)
-        # else:
-            # MainWin(fname, backend)
-        pass
+        # TODO check if pv and bsdtar are installed
 
-    def list_content(self, archive_file, mime_type, done_cb):
+        self.mime_type = mime_type_query(archive_file)
+        if not self.mime_type in EXTRACT_MAP:
+            raise RuntimeError('mime-type not supported')
+
+    def list_content(self, archive_file, done_cb):
         self._contents = list()
-        cmd = '%s "%s"' % (LIST_MAP.get(mime_type), archive_file)
+        cmd = '%s "%s"' % (LIST_MAP.get(self.mime_type), archive_file)
         exe = ecore.Exe(cmd, ecore.ECORE_EXE_PIPE_READ |
                              ecore.ECORE_EXE_PIPE_READ_LINE_BUFFERED)
         exe.on_data_event_add(self._list_stdout)
         exe.on_del_event_add(self._list_done, done_cb)
 
-    def extract(self, archive_file, mime_type, destination, progress_cb):
+    def extract(self, archive_file, destination, progress_cb, done_cb):
         os.chdir(destination)
-        cmd = 'pv -n "%s" | %s ' % (archive_file, EXTRACT_MAP.get(mime_type))
+        cmd = 'pv -n "%s" | %s ' % (archive_file, EXTRACT_MAP.get(self.mime_type))
         exe = ecore.Exe(cmd, ecore.ECORE_EXE_PIPE_ERROR |
                              ecore.ECORE_EXE_PIPE_ERROR_LINE_BUFFERED)
         exe.on_error_event_add(self._extract_stderr, progress_cb)
-        exe.on_del_event_add(self._extract_done, progress_cb)
+        exe.on_del_event_add(self._extract_done, done_cb)
 
     def _list_stdout(self, command, event):
         self._contents.extend(event.lines)
@@ -95,8 +97,8 @@ class ShellBackend(object):
         done_cb(self._contents)
 
     def _extract_stderr(self, command, event, progress_cb):
-        progress = float(event.lines[0])
-        progress_cb(progress / 100)
+        progress = float(event.lines[0]) / 100
+        progress_cb(progress, '')
 
     def _extract_done(self, command, event, progress_cb):
-        progress_cb('done')
+        progress_cb('success')
