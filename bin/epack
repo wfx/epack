@@ -17,14 +17,6 @@
 
 from __future__ import absolute_import, print_function
 
-__authors__ = "Dave Andreoli (davemds) & Wolfgang Morawetz (wfx)"
-__copyright__ = "Copyright (C) 2014 Wolfgang Morawetz"
-__version__ = "2014.12.7.050"
-__description__ = 'A simple tool to extract any file with efm'
-__github__ = 'https://github.com/wfx/epack'
-__source__ = 'Source code and bug reports: {0}'.format(__github__)
-PY_EFL = "https://git.enlightenment.org/bindings/python/python-efl.git/"
-
 import os
 import sys
 import magic
@@ -54,7 +46,8 @@ try:
     from efl.elementary.progressbar import Progressbar
     from efl.elementary.separator import Separator
 except ImportError:
-    print("ImportError: Please install Python-EFL:\n ", PY_EFL)
+    print("ImportError: Please install Python-EFL:\n ",
+          "https://git.enlightenment.org/bindings/python/python-efl.git/")
     exit(1)
 
 
