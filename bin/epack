@@ -224,6 +224,8 @@ class MainWin(StandardWindow):
                                            size_hint_weight=EXPAND_HORIZ,
                                            size_hint_align=(0.0, 1.0))
             table.pack(self.create_folder_chk, 2, 3, 1, 1)
+            self.create_folder_chk.callback_changed_add(
+                                   lambda c: self.update_fsb_label())
             self.create_folder_chk.show()
 
             # ask for the archive content list
@@ -254,10 +256,16 @@ class MainWin(StandardWindow):
         elif action == 'close':
             self.btn1.text = 'Extract'
         ctx.delete()
-        
-        
+
     def update_header(self):
         self.hlabel.text = "<b>Archive:</b> %s" % (os.path.basename(self.fname))
+
+    def update_fsb_label(self):
+        if self.create_folder_chk.state is True:
+            name = os.path.splitext(os.path.basename(self.fname))[0]
+            self.fsb.text = os.path.join(self.dest_folder, name)
+        else:
+            self.fsb.text = self.dest_folder
 
     def show_error_msg(self, msg):
         pop = Popup(self, text=msg)
@@ -276,14 +284,9 @@ class MainWin(StandardWindow):
     def chosen_folder_cb(self, fsb, folder):
         if folder:
             self.dest_folder = folder
-            fsb.text = folder
+            self.update_fsb_label()
 
     def extract_btn_cb(self, btn):
-        if self.create_folder_chk.state == True:
-            folder = os.path.basename(self.fname)
-            self.dest_folder = os.path.join(self.dest_folder, folder)
-            os.mkdir(self.dest_folder)
-
         pp = Popup(self)
         pp.part_text_set('title,text', 'Extracting files, please wait...')
         pp.show()
@@ -309,7 +312,11 @@ class MainWin(StandardWindow):
         self.prog_label = lb
         self.popup = pp
 
-        backend.extract(self.fname, self.mime_type, self.dest_folder,
+        folder = self.fsb.text
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+        backend.extract(self.fname, self.mime_type, folder,
                         self.extract_progress_cb,
                         self.extract_done_cb)
 
