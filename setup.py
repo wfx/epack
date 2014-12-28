@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name = 'epack',
-    version = '2014.12.7.050',
+    version = '0.1.0',
     description = 'A simple tool to extract any archive file',
     license="GNU General Public License v3 (GPLv3)",
     author = 'Wolfgang Morawetz (wfx) & Davide Andreoli (davemds)',
