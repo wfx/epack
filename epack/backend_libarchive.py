@@ -43,12 +43,12 @@ class LibarchiveBackend(object):
         self._queue = Queue()
         self._total_size = 0
 
-    def list_content(self, archive_file, mime_type, done_cb):
+    def list_content(self, archive_file, done_cb):
         ecore.Timer(0.1, self._check_list_queue, done_cb)
         self.Thread(target=self._list_in_a_thread,
                     args=(archive_file,)).start()
 
-    def extract(self, archive_file, mime_type, destination, progress_cb, done_cb):
+    def extract(self, archive_file, destination, progress_cb, done_cb):
         ecore.Timer(0.1, self._check_extract_queue, progress_cb, done_cb)
         self.Thread(target=self._extract_in_a_thread,
                     args=(archive_file, destination)).start()
