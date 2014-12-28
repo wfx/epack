@@ -19,7 +19,6 @@ from __future__ import absolute_import, print_function
 
 import os
 import sys
-import magic
 try:
     from urllib.parse import unquote
 except:
@@ -29,49 +28,8 @@ from efl import elementary
 
 from epack.backend import load_backend
 from epack.gui import MainWin, ErrorWin, FileChooserWin
+from epack.utils import mime_type_query, SUPPORTED_MIME
 
-
-# the extracting application needs support to read from stdin.
-# and bsdtar is great at all.
-EXTRACT_MAP = {
-    'application/gzip': 'bsdtar -xf -','application/x-gzip': 'bsdtar -xf -',
-    'application/bzip2': 'bsdtar -xf -','application/x-bzip2': 'bsdtar -xf -',
-    'application/bz2': 'bsdtar -xf -','application/x-bz2': 'bsdtar -xf -',
-    'application/rar': 'bsdtar -xf -','application/x-rar': 'bsdtar -xf -',
-    'application/gz': 'bsdtar -xf -','application/x-gz': 'gbsdtar -xf -',
-    'application/tar': 'bsdtar -xf -','application/x-tar': 'bsdtar -xf -',
-    'application/tbz2': 'bsdtar -xf -','application/x-tbz2': 'bsdtar -xf -',
-    'application/tar.bz2': 'bsdtar -xf -','application/x-tar.bz2': 'bsdtar -xf -',
-    'application/tar.gz': 'bsdtar -xf -','application/x-tar.gz': 'bsdtar -xf -',
-    'application/tgz': 'bsdtar -xf -','application/x-tgz': 'bsdtar -xf -',
-    'application/zip': 'bsdtar -xf -','application/x-zip': 'bsdtar -xf -',
-    'application/Z': 'bsdtar -xf -','application/x-Z': 'bsdtar -xf -',
-    'application/xz': 'bsdtar -xf -','application/x-xz': 'bsdtar -xf -',
-    'application/iso9660-image': 'bsdtar -xf -','application/x-iso9660-image': 'bsdtar -xf -'
-}
-
-LIST_MAP = {
-    'application/gzip': 'bsdtar -tf','application/x-gzip': 'bsdtar -tf',
-    'application/bzip2': 'bsdtar -tf','application/x-bzip2': 'bsdtar -tf',
-    'application/bz2': 'bsdtar -tf','application/x-bz2': 'bsdtar -tf',
-    'application/rar': 'bsdtar -tf','application/x-rar': 'bsdtar -tf',
-    'application/gz': 'bsdtar -tf','application/x-gz': 'gbsdtar -tf',
-    'application/tar': 'bsdtar -tf','application/x-tar': 'bsdtar -tf',
-    'application/tbz2': 'bsdtar -tf','application/x-tbz2': 'bsdtar -tf',
-    'application/tar.gz': 'bsdtar -tf','application/x-tar.gz': 'bsdtar -tf',
-    'application/tar.bz2': 'bsdtar -tf','application/x-tar.bz2': 'bsdtar -tf',
-    'application/tgz': 'bsdtar -tf','application/x-tgz': 'bsdtar -tf',
-    'application/zip': 'bsdtar -tf','application/x-zip': 'bsdtar -tf',
-    'application/Z': 'bsdtar -tf','application/x-Z': 'bsdtar -tf',
-    'application/xz': 'bsdtar -tf','application/x-xz': 'bsdtar -tf',
-    'application/iso9660-image': 'bsdtar -tf -','application/x-iso9660-image': 'bsdtar -tf -'
-}
-
-
-def mime_type_query(fname):
-    m = magic.open(magic.MAGIC_MIME_TYPE)
-    m.load()
-    return m.file(fname)
 
 
 if __name__ == "__main__":
@@ -95,7 +53,7 @@ if __name__ == "__main__":
             fname = os.path.abspath(fname)
 
         mime_type = mime_type_query(fname)
-        if not EXTRACT_MAP.get(mime_type):
+        if not mime_type in SUPPORTED_MIME:
             ErrorWin('Mimetype: "%s" is not supported' % mime_type)
         else:
             MainWin(fname, backend)

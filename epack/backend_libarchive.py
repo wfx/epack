@@ -17,6 +17,7 @@
 
 from __future__ import absolute_import, print_function
 
+import os
 import threading
 try:
     from queue import Queue # py3
