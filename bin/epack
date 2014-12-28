@@ -177,12 +177,9 @@ class MainWin(StandardWindow):
             frame.content = table
             table.show()
 
-            # fsb
-            icon = Icon(table, standard='folder')
-            self.fsb = FileselectorButton(self, inwin_mode=False, content=icon,
-                                    folder_only=True, text=self.dest_folder,
-                                    size_hint_weight=EXPAND_HORIZ,
-                                    size_hint_align=FILL_HORIZ)
+            # FileSelectorButton
+            self.fsb = DestinationButton(self)
+            self.fsb.text = self.dest_folder
             self.fsb.callback_file_chosen_add(self.chosen_folder_cb)
             table.pack(self.fsb, 0, 0, 3, 1)
             self.fsb.show()
@@ -345,6 +342,36 @@ class MainWin(StandardWindow):
             self.show_error_msg(result)
             self.popup.delete()
 
+
+class DestinationButton(FileselectorButton):
+    def __init__(self, parent):
+        FileselectorButton.__init__(self, parent,
+                    inwin_mode=False, folder_only=True,
+                    size_hint_weight=EXPAND_HORIZ, size_hint_align=FILL_HORIZ)
+        self._text = ''
+
+        box = Box(self, horizontal=True, padding=(3,0))
+        self.content = box
+        box.show()
+
+        icon = Icon(box, standard='folder', size_hint_min=(16,16))
+        box.pack_end(icon)
+        icon.show()
+
+        self.label = Label(box, ellipsis=True,
+                           size_hint_weight=EXPAND_BOTH,
+                           size_hint_align=FILL_HORIZ)
+        box.pack_end(self.label)
+        self.label.show()
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, text):
+        self._text = text
+        self.label.text = '<align=left>%s</align>' % text
 
 class FileChooserWin(StandardWindow):
     def __init__(self):
