@@ -15,6 +15,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import absolute_import, print_function
+
 __authors__ = "Dave Andreoli (davemds) & Wolfgang Morawetz (wfx)"
 __copyright__ = "Copyright (C) 2014 Wolfgang Morawetz"
 __version__ = "2014.12.7.050"
@@ -26,6 +28,11 @@ PY_EFL = "https://git.enlightenment.org/bindings/python/python-efl.git/"
 import os
 import sys
 import magic
+try:
+    from urllib.parse import unquote
+except:
+    from urllib import unquote
+
 try:
     from efl import ecore
     from efl import elementary
@@ -536,7 +543,10 @@ if __name__ == "__main__":
         FileChooserWin()
     else:
         fname = sys.argv[1]
-        fname = os.path.abspath(fname.replace("file://",""))
+        if fname.startswith('file://'):
+            fname = unquote(fname)[7:]
+        else:
+            fname = os.path.abspath(fname)
         MainWin(fname)
 
     elementary.run()
