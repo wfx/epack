@@ -29,7 +29,8 @@ from efl.elementary.ctxpopup import Ctxpopup
 from efl.elementary.icon import Icon
 from efl.elementary.label import Label
 from efl.elementary.frame import Frame
-from efl.elementary.genlist import Genlist, GenlistItemClass
+from efl.elementary.genlist import Genlist, GenlistItemClass, \
+    ELM_GENLIST_ITEM_TREE
 from efl.elementary.button import Button
 from efl.elementary.table import Table
 from efl.elementary.check import Check
@@ -46,14 +47,14 @@ FILL_BOTH = EVAS_HINT_FILL, EVAS_HINT_FILL
 FILL_HORIZ = EVAS_HINT_FILL, 0.0
 
 
-def gl_text_get(obj, part, item_data):
-    return item_data
+def gl_fold_text_get(obj, part, item_data):
+    return item_data[:-1].split('/')[-1]
 
 def gl_fold_icon_get(obj, part, item_data):
     return Icon(obj, standard='folder')
 
-def gl_file_icon_get(obj, part, item_data):
-    return Icon(obj, standard='file')
+def gl_file_text_get(obj, part, item_data):
+    return item_data.split('/')[-1]
 
 
 class MainWin(StandardWindow):
@@ -85,15 +86,18 @@ class MainWin(StandardWindow):
         self.header_box.show()
 
         # genlist with archive content
-        self.file_itc = GenlistItemClass(item_style="one_icon",
-                                         text_get_func=gl_text_get,
-                                         content_get_func=gl_file_icon_get)
+        self.file_itc = GenlistItemClass(item_style="no_icon",
+                                         text_get_func=gl_file_text_get)
         self.fold_itc = GenlistItemClass(item_style="one_icon",
-                                         text_get_func=gl_text_get,
+                                         text_get_func=gl_fold_text_get,
                                          content_get_func=gl_fold_icon_get)
         self.file_list = Genlist(self, homogeneous=True,
                                  size_hint_weight=EXPAND_BOTH,
                                  size_hint_align=FILL_BOTH)
+        self.file_list.callback_expand_request_add(self._gl_expand_req_cb)
+        self.file_list.callback_contract_request_add(self._gl_contract_req_cb)
+        self.file_list.callback_expanded_add(self._gl_expanded_cb)
+        self.file_list.callback_contracted_add(self._gl_contracted_cb)
         vbox.pack_end(self.file_list)
         self.file_list.show()
 
@@ -253,11 +257,46 @@ class MainWin(StandardWindow):
             self.app.dest_folder = folder
             self.update_fsb_label()
 
-    def list_item_add(self, path):
-        if path.endswith('/'):
-            self.file_list.item_append(self.fold_itc, path)
+    def tree_populate(self, file_list=None, parent=None):
+        if file_list is not None:
+            self._file_list = file_list
+
+        if parent is None:
+            prefix = None # items must match this prefix to be listed
+            fscount = 0   # folder must have this number of slashes
+            dscount = 1   # files must have this number of slashes
         else:
-            self.file_list.item_append(self.file_itc, path)
+            prefix = parent.data[:-1]
+            fscount = prefix.count('/') + 1
+            dscount = fscount + 1
+
+        files = []
+        for path in self._file_list:
+            if prefix and not path.startswith(prefix):
+                continue
+
+            if path.endswith('/'):
+                if path.count('/') == dscount:
+                    self.file_list.item_append(self.fold_itc, path, parent,
+                                               flags=ELM_GENLIST_ITEM_TREE)
+            else:
+                if path.count('/') == fscount:
+                    files.append(path)
+
+        for path in files:
+            self.file_list.item_append(self.file_itc, path, parent)
+
+    def _gl_expand_req_cb(self, gl, item):
+        item.expanded = True
+
+    def _gl_expanded_cb(self, gl, item):
+        self.tree_populate(None, item)
+
+    def _gl_contract_req_cb(self, gl, item):
+        item.expanded = False
+
+    def _gl_contracted_cb(self, gl, item):
+        item.subitems_clear()
 
     def extract_btn_cb(self, btn):
         self.prog_popup = None

@@ -94,7 +94,7 @@ class ShellBackend(object):
         self._contents.extend(event.lines)
 
     def _list_done(self, command, event, done_cb):
-        done_cb(self._contents)
+        done_cb(sorted(self._contents))
 
     def _extract_stderr(self, command, event, progress_cb):
         progress = float(event.lines[0]) / 100

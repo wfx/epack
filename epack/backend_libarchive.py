@@ -65,7 +65,7 @@ class LibarchiveBackend(object):
             for entry in archive:
                 L.append(entry.pathname)
                 self._total_size += entry.size
-        self._queue.put(L)
+        self._queue.put(sorted(L))
 
     def _extract_in_a_thread(self, archive_file, destination):
         written = 0

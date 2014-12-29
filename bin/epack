@@ -73,8 +73,7 @@ class EpackApplication(object):
         print('Using backend: "%s"' % self.backend.name)
 
     def _list_done_cb(self, file_list):
-        for path in file_list:
-            self.main_win.list_item_add(path)
+        self.main_win.tree_populate(file_list)
         self.main_win.update_ui()
 
     def extract_archive(self):
