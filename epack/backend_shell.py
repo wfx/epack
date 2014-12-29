@@ -64,7 +64,7 @@ class ShellBackend(object):
     """ This backend use pv + bsdtar to extract archives
         Use ecore.Exe to don't block the UI.
     """
-    name = "pv | bsdtar in an ecore.Exe"
+    name = "bsdtar"
 
     def __init__(self, archive_file):
 

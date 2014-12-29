@@ -27,7 +27,7 @@ def load_backend(fname):
             instance = backend(fname)
             break
         except Exception as e:
-            print(e)
+            print('%s: %s' % (backend.name, e))
             instance = None
 
     return instance

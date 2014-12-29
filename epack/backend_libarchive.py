@@ -34,7 +34,7 @@ class LibarchiveBackend(object):
 
         Use threading to don't block the UI.
     """
-    name = "Libarchive in a thread"
+    name = "Libarchive"
 
     def __init__(self, archive_file):
         import epack.libarchive
