@@ -358,6 +358,7 @@ class FileChooserWin(StandardWindow):
                           size_hint_weight=EXPAND_BOTH,
                           size_hint_align=FILL_BOTH)
         fs.callback_done_add(self.done_cb)
+        fs.callback_activated_add(self.done_cb)
         # TODO this filter seems not to work well...need fixing
         # fs.mime_types_filter_append(list(EXTRACT_MAP.keys()), 'Archive files')
         # fs.mime_types_filter_append(['*'], 'All files')
@@ -368,8 +369,10 @@ class FileChooserWin(StandardWindow):
         self.show()
 
     def done_cb(self, fs, path):
-        if path:
+        if path is None:
+            self.delete()
+        elif os.path.isfile(path):
             self.app.load_file(path)
-        self.delete()
+            self.delete()
 
 
