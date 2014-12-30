@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name = 'epack',
-    version = '0.1.0',
+    version = '0.1.0', # don't forget to change also in utils.py
     description = 'A simple tool to extract any archive file',
     license="GNU General Public License v3 (GPLv3)",
     author = 'Wolfgang Morawetz (wfx) & Davide Andreoli (davemds)',
@@ -13,6 +13,9 @@ setup(
     requires = ['efl', 'magic'],
     provides = ['epack'],
     packages = ['epack', 'epack.libarchive'],
+    package_data = {
+        'epack': ['data/*'],
+    },
     scripts = ['bin/epack'],
     data_files = [
         ('share/applications', ['data/epack.desktop']),

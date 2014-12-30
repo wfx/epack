@@ -26,6 +26,7 @@ from efl.elementary.window import StandardWindow
 from efl.elementary.innerwindow import InnerWindow
 from efl.elementary.box import Box
 from efl.elementary.ctxpopup import Ctxpopup
+from efl.elementary.entry import Entry
 from efl.elementary.icon import Icon
 from efl.elementary.label import Label
 from efl.elementary.frame import Frame
@@ -40,11 +41,15 @@ from efl.elementary.popup import Popup
 from efl.elementary.progressbar import Progressbar
 from efl.elementary.separator import Separator
 
+from epack.utils import pkg_resource_get, VERSION, LICENSE, AUTHORS, INFO
+
 
 EXPAND_BOTH = EVAS_HINT_EXPAND, EVAS_HINT_EXPAND
 EXPAND_HORIZ = EVAS_HINT_EXPAND, 0.0
+EXPAND_VERT = 0.0, EVAS_HINT_EXPAND
 FILL_BOTH = EVAS_HINT_FILL, EVAS_HINT_FILL
 FILL_HORIZ = EVAS_HINT_FILL, 0.0
+FILL_VERT = 0.0, EVAS_HINT_FILL
 
 
 def gl_fold_text_get(obj, part, item_data):
@@ -143,7 +148,7 @@ class MainWin(StandardWindow):
         table.pack(sep, 1, 2, 1, 2)
         sep.show()
 
-        # delete archive checkbox
+        # delete-archive checkbox
         self.del_chk = Check(table, text="Delete archive after extraction",
                              size_hint_weight=EXPAND_HORIZ,
                              size_hint_align=(0.0, 1.0))
@@ -151,7 +156,7 @@ class MainWin(StandardWindow):
         table.pack(self.del_chk, 2, 2, 1, 1)
         self.del_chk.show()
 
-        # create archive folder
+        # create-archive-folder checkbox
         self.create_folder_chk = Check(table, text="Create archive folder",
                                        size_hint_weight=EXPAND_HORIZ,
                                        size_hint_align=(0.0, 1.0))
@@ -211,7 +216,8 @@ class MainWin(StandardWindow):
 
         # no archive loaded
         elif self.app.file_name is None:
-            bt = Button(self, text='No archive loaded, click to choose a file')
+            bt = Button(self, text='No archive loaded, click to choose a file',
+                        size_hint_weight=EXPAND_HORIZ)
             bt.callback_clicked_add(lambda b: FileChooserWin(self.app))
             self.header_box.pack_end(bt)
             bt.show()
@@ -219,11 +225,21 @@ class MainWin(StandardWindow):
         # normal operation (archive loaded and listed)
         else:
             txt = "<b>Archive:</b> %s" % (os.path.basename(self.app.file_name))
-            lb = Label(self, text=txt,size_hint_weight=EXPAND_HORIZ,
+            lb = Label(self, text=txt, size_hint_weight=EXPAND_HORIZ,
                        size_hint_align=(0.0, 0.5))
             self.header_box.pack_end(lb)
             lb.show()
             ui_disabled = False
+
+        # always show the about button
+        sep = Separator(self)
+        self.header_box.pack_end(sep)
+        sep.show()
+
+        ic = Icon(self, standard='info', size_hint_min=(20,20))
+        ic.callback_clicked_add(lambda i: InfoWin())
+        self.header_box.pack_end(ic)
+        ic.show()
 
         for widget in (self.btn1, self.btn2, self.fsb,
                        self.create_folder_chk, self.del_chk):
@@ -343,15 +359,66 @@ class MainWin(StandardWindow):
             self.prog_popup = None
 
 
-class ErrorWin(StandardWindow):
-    def __init__(self, msg):
-        StandardWindow.__init__(self, 'epack.py', 'Epack', autodel=True)
-        self.callback_delete_request_add(lambda o: elementary.exit())
+class InfoWin(StandardWindow):
+    def __init__(self):
+        StandardWindow.__init__(self, 'epack', 'Epack', autodel=True)
 
-        inwin = InnerWindow(self, content=Label(self, text=msg))
-        inwin.show()
+        fr = Frame(self, style='pad_large', size_hint_weight=EXPAND_BOTH,
+                   size_hint_align=FILL_BOTH)
+        self.resize_object_add(fr)
+        fr.show()
 
-        self.resize(300, 150)
+        hbox = Box(self, horizontal=True, padding=(12,12))
+        fr.content = hbox
+        hbox.show()
+
+        vbox = Box(self, align=(0.0,0.0), padding=(6,6),
+                   size_hint_weight=EXPAND_VERT, size_hint_align=FILL_VERT)
+        hbox.pack_end(vbox)
+        vbox.show()
+
+        # icon + version
+        ic = Icon(self, file=pkg_resource_get('epack64.png'),
+                  aspect_fixed=True, resizable=(False, False))
+        vbox.pack_end(ic)
+        ic.show()
+
+        lb = Label(self, text='Version: %s' % VERSION)
+        vbox.pack_end(lb)
+        lb.show()
+
+        sep = Separator(self, horizontal=True)
+        vbox.pack_end(sep)
+        sep.show()
+
+        # buttons
+        bt = Button(self, text='Epack', size_hint_align=FILL_HORIZ)
+        bt.callback_clicked_add(lambda b: self.entry.text_set(INFO))
+        vbox.pack_end(bt)
+        bt.show()
+
+        bt = Button(self, text='Website',size_hint_align=FILL_HORIZ)
+        bt.disabled = True
+        vbox.pack_end(bt)
+        bt.show()
+
+        bt = Button(self, text='Authors', size_hint_align=FILL_HORIZ)
+        bt.callback_clicked_add(lambda b: self.entry.text_set(AUTHORS))
+        vbox.pack_end(bt)
+        bt.show()
+
+        bt = Button(self, text='License', size_hint_align=FILL_HORIZ)
+        bt.callback_clicked_add(lambda b: self.entry.text_set(LICENSE))
+        vbox.pack_end(bt)
+        bt.show()
+
+        # main text
+        self.entry = Entry(self, editable=False, scrollable=True, text=INFO,
+                        size_hint_weight=EXPAND_BOTH, size_hint_align=FILL_BOTH)
+        hbox.pack_end(self.entry)
+        self.entry.show()
+
+        self.resize(400, 200)
         self.show()
 
 
