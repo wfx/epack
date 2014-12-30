@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-30 14:54+0100\n"
+"POT-Creation-Date: 2014-12-30 15:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,81 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: bin/epack:63
+#, python-format
+msgid "Cannot read file:<br>%s"
+msgstr ""
+
 #: bin/epack:69
 msgid "Cannot read archive"
+msgstr ""
+
+#: epack/gui.py:137
+msgid "Extract"
+msgstr ""
+
+#: epack/gui.py:153
+msgid "Delete archive after extraction"
+msgstr ""
+
+#: epack/gui.py:161
+msgid "Create archive folder"
+msgstr ""
+
+#: epack/gui.py:212
+msgid "Reading archive, please wait..."
+msgstr ""
+
+#: epack/gui.py:220
+msgid "No archive loaded, click to choose a file"
+msgstr ""
+
+#: epack/gui.py:228
+#, python-format
+msgid "<b>Archive:</b> %s"
+msgstr ""
+
+#: epack/gui.py:260
+msgid "Error"
+msgstr ""
+
+#: epack/gui.py:262
+msgid "Continue"
+msgstr ""
+
+#: epack/gui.py:266
+msgid "Exit"
+msgstr ""
+
+#: epack/gui.py:325
+msgid "Extracting files, please wait..."
+msgstr ""
+
+#: epack/gui.py:342
+msgid "Cancel"
+msgstr ""
+
+#: epack/gui.py:387
+#, python-format
+msgid "Version: %s"
+msgstr ""
+
+#: epack/gui.py:396
+msgid "Epack"
+msgstr ""
+
+#: epack/gui.py:401
+msgid "Website"
+msgstr ""
+
+#: epack/gui.py:406
+msgid "Authors"
+msgstr ""
+
+#: epack/gui.py:411
+msgid "License"
+msgstr ""
+
+#: epack/gui.py:461
+msgid "Choose an archive"
 msgstr ""

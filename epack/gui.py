@@ -134,7 +134,7 @@ class MainWin(StandardWindow):
         table.pack(btn_box, 0, 2, 1, 2)
         btn_box.show()
         
-        self.btn1 = Button(table, text='Extract')
+        self.btn1 = Button(table, text=_('Extract'))
         self.btn1.callback_clicked_add(self.extract_btn_cb)
         btn_box.pack_end(self.btn1)
         self.btn1.show()
@@ -150,7 +150,7 @@ class MainWin(StandardWindow):
         sep.show()
 
         # delete-archive checkbox
-        self.del_chk = Check(table, text="Delete archive after extraction",
+        self.del_chk = Check(table, text=_('Delete archive after extraction'),
                              size_hint_weight=EXPAND_HORIZ,
                              size_hint_align=(0.0, 1.0))
         self.del_chk.callback_changed_add(self.del_check_cb)
@@ -158,7 +158,7 @@ class MainWin(StandardWindow):
         self.del_chk.show()
 
         # create-archive-folder checkbox
-        self.create_folder_chk = Check(table, text="Create archive folder",
+        self.create_folder_chk = Check(table, text=_('Create archive folder'),
                                        size_hint_weight=EXPAND_HORIZ,
                                        size_hint_align=(0.0, 1.0))
         table.pack(self.create_folder_chk, 2, 3, 1, 1)
@@ -204,12 +204,12 @@ class MainWin(StandardWindow):
 
         # file listing in progress
         if listing_in_progress:
-            spin = Progressbar(self, style="wheel", pulse_mode=True)
+            spin = Progressbar(self, style='wheel', pulse_mode=True)
             spin.pulse(True)
             spin.show()
             self.header_box.pack_end(spin)
 
-            lb = Label(self, text="Reading archive, please wait...",
+            lb = Label(self, text=_('Reading archive, please wait...'),
                        size_hint_weight=EXPAND_HORIZ,
                        size_hint_align=(0.0, 0.5))
             lb.show()
@@ -217,7 +217,7 @@ class MainWin(StandardWindow):
 
         # no archive loaded
         elif self.app.file_name is None:
-            bt = Button(self, text='No archive loaded, click to choose a file',
+            bt = Button(self, text=_('No archive loaded, click to choose a file'),
                         size_hint_weight=EXPAND_HORIZ)
             bt.callback_clicked_add(lambda b: FileChooserWin(self.app))
             self.header_box.pack_end(bt)
@@ -225,7 +225,7 @@ class MainWin(StandardWindow):
 
         # normal operation (archive loaded and listed)
         else:
-            txt = "<b>Archive:</b> %s" % (os.path.basename(self.app.file_name))
+            txt = _('<b>Archive:</b> %s') % (os.path.basename(self.app.file_name))
             lb = Label(self, text=txt, size_hint_weight=EXPAND_HORIZ,
                        size_hint_align=(0.0, 0.5))
             self.header_box.pack_end(lb)
@@ -257,13 +257,13 @@ class MainWin(StandardWindow):
 
     def show_error_msg(self, msg):
         pop = Popup(self, text=msg)
-        pop.part_text_set('title,text', 'Error')
+        pop.part_text_set('title,text', _('Error'))
 
-        btn = Button(self, text='Continue')
+        btn = Button(self, text=_('Continue'))
         btn.callback_clicked_add(lambda b: pop.delete())
         pop.part_content_set('button1', btn)
 
-        btn = Button(self, text='Exit')
+        btn = Button(self, text=_('Exit'))
         btn.callback_clicked_add(lambda b: elementary.exit())
         pop.part_content_set('button2', btn)
 
@@ -322,7 +322,7 @@ class MainWin(StandardWindow):
 
     def build_prog_popup(self):
         pp = Popup(self)
-        pp.part_text_set('title,text', 'Extracting files, please wait...')
+        pp.part_text_set('title,text', _('Extracting files, please wait...'))
         pp.show()
 
         vbox = Box(self)
@@ -339,7 +339,7 @@ class MainWin(StandardWindow):
         vbox.pack_end(pb)
         pb.show()
 
-        bt = Button(pp, text='Cancel', disabled=True)
+        bt = Button(pp, text=_('Cancel'), disabled=True)
         # TODO make the button actually work
         pp.part_content_set('button1', bt)
 
@@ -384,7 +384,7 @@ class InfoWin(StandardWindow):
         vbox.pack_end(ic)
         ic.show()
 
-        lb = Label(self, text='Version: %s' % VERSION)
+        lb = Label(self, text=_('Version: %s') % VERSION)
         vbox.pack_end(lb)
         lb.show()
 
@@ -393,22 +393,22 @@ class InfoWin(StandardWindow):
         sep.show()
 
         # buttons
-        bt = Button(self, text='Epack', size_hint_align=FILL_HORIZ)
+        bt = Button(self, text=_('Epack'), size_hint_align=FILL_HORIZ)
         bt.callback_clicked_add(lambda b: self.entry.text_set(INFO))
         vbox.pack_end(bt)
         bt.show()
 
-        bt = Button(self, text='Website',size_hint_align=FILL_HORIZ)
+        bt = Button(self, text=_('Website'),size_hint_align=FILL_HORIZ)
         bt.callback_clicked_add(lambda b: xdg_open(GITHUB))
         vbox.pack_end(bt)
         bt.show()
 
-        bt = Button(self, text='Authors', size_hint_align=FILL_HORIZ)
+        bt = Button(self, text=_('Authors'), size_hint_align=FILL_HORIZ)
         bt.callback_clicked_add(lambda b: self.entry.text_set(AUTHORS))
         vbox.pack_end(bt)
         bt.show()
 
-        bt = Button(self, text='License', size_hint_align=FILL_HORIZ)
+        bt = Button(self, text=_('License'), size_hint_align=FILL_HORIZ)
         bt.callback_clicked_add(lambda b: self.entry.text_set(LICENSE))
         vbox.pack_end(bt)
         bt.show()
@@ -458,7 +458,7 @@ class DestinationButton(FileselectorButton):
 class FileChooserWin(StandardWindow):
     def __init__(self, app):
         self.app = app
-        StandardWindow.__init__(self, 'epack.py', 'Choose an archive')
+        StandardWindow.__init__(self, 'epack.py', _('Choose an archive'))
         self.callback_delete_request_add(lambda o: self.delete())
 
         fs = Fileselector(self, expandable=False,

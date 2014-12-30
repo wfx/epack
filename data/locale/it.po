@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: epack 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-30 14:53+0100\n"
+"POT-Creation-Date: 2014-12-30 15:16+0100\n"
 "PO-Revision-Date: 2014-12-30 14:53+0100\n"
 "Last-Translator: Davide Andreoli <dave@gurumeditation.it>\n"
 "Language-Team:\n"
@@ -18,6 +18,81 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
+#: bin/epack:63
+#, python-format
+msgid "Cannot read file:<br>%s"
+msgstr "Impossibile leggere il file:<br>%s"
+
 #: bin/epack:69
 msgid "Cannot read archive"
 msgstr "Impossibile leggere l'archivio"
+
+#: epack/gui.py:137
+msgid "Extract"
+msgstr "Estrai"
+
+#: epack/gui.py:153
+msgid "Delete archive after extraction"
+msgstr "Elimina il file dopo aver estratto"
+
+#: epack/gui.py:161
+msgid "Create archive folder"
+msgstr "Crea la cartella dell'archivio"
+
+#: epack/gui.py:212
+msgid "Reading archive, please wait..."
+msgstr "Attendere, lettura archivio..."
+
+#: epack/gui.py:220
+msgid "No archive loaded, click to choose a file"
+msgstr "Nessun archivio caricato, click per scegliere"
+
+#: epack/gui.py:228
+#, python-format
+msgid "<b>Archive:</b> %s"
+msgstr "<b>Archivio:</b> %s"
+
+#: epack/gui.py:260
+msgid "Error"
+msgstr "Errore"
+
+#: epack/gui.py:262
+msgid "Continue"
+msgstr "Continua"
+
+#: epack/gui.py:266
+msgid "Exit"
+msgstr "Esci"
+
+#: epack/gui.py:325
+msgid "Extracting files, please wait..."
+msgstr "Attendere, estrazione in corso..."
+
+#: epack/gui.py:342
+msgid "Cancel"
+msgstr "Annulla"
+
+#: epack/gui.py:387
+#, python-format
+msgid "Version: %s"
+msgstr "Versione: %s"
+
+#: epack/gui.py:396
+msgid "Epack"
+msgstr "Epack"
+
+#: epack/gui.py:401
+msgid "Website"
+msgstr "Sito web"
+
+#: epack/gui.py:406
+msgid "Authors"
+msgstr "Autori"
+
+#: epack/gui.py:411
+msgid "License"
+msgstr "Licenza"
+
+#: epack/gui.py:461
+msgid "Choose an archive"
+msgstr "Scegli un archivio"

@@ -60,7 +60,7 @@ class EpackApplication(object):
             fname = os.path.abspath(fname)
 
         if not os.path.isfile(fname):
-            self.main_win.show_error_msg('Cannot read file:<br>%s' % fname)
+            self.main_win.show_error_msg(_('Cannot read file:<br>%s') % fname)
             return
 
         # search a backend cabable of reading this file
