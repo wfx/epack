@@ -91,6 +91,7 @@ SUPPORTED_MIME = [
     'application/iso9660-image', 'application/x-iso9660-image'
 ]
 
+base_dir = os.path.dirname(__file__)
 
 def mime_type_query(fname):
     m = magic.open(magic.MAGIC_MIME_TYPE)
@@ -98,7 +99,9 @@ def mime_type_query(fname):
     return m.file(fname)
 
 def pkg_resource_get(fname):
-    return os.path.join(os.path.dirname(__file__), 'data', fname)
+    return os.path.join(base_dir, 'data', fname)
 
 def xdg_open(url_or_file):
     Exe('xdg-open %s' % url_or_file)
+
+

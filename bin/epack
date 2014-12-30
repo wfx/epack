@@ -19,6 +19,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import os
 import sys
+import gettext
 try:
     from urllib.parse import unquote
 except:
@@ -28,6 +29,13 @@ from efl import elementary
 
 from epack.backend import load_backend
 from epack.gui import MainWin
+from epack.utils import base_dir
+
+# init gettext
+# install the _() and ngettext() func in the main namespace
+# locale .mo files are searched directly inside the epack package
+localedir = os.path.join(base_dir, 'locale')
+gettext.install('epack', names='ngettext', localedir=localedir)
 
 
 
@@ -58,7 +66,7 @@ class EpackApplication(object):
         # search a backend cabable of reading this file
         self.backend = load_backend(fname)
         if self.backend is None:
-            self.main_win.show_error_msg('Cannot read archive')
+            self.main_win.show_error_msg(_('Cannot read archive'))
             return
 
         # start the archive listing
