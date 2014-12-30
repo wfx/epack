@@ -56,7 +56,18 @@ along with this program. If not, see<br><link>http://www.gnu.org/licenses/</link
 """
 
 INFO = """
-please fill me...
+<align=center>
+<hilight>Epack</hilight> is an archive manager for the Enlightenment desktop.<br> 
+<br>
+With <hilight>Epack</hilight> you can:<br>
+View the content of an archive.<br>
+Extract files from the archive.<br>
+Extract into a different folder.<br>
+Create archive folder.<br>
+Delete archive after extraction.<br>
+feed youre kitty.<br>
+<br>
+</align>
 """
 
 SUPPORTED_MIME = [
