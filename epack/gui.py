@@ -41,7 +41,8 @@ from efl.elementary.popup import Popup
 from efl.elementary.progressbar import Progressbar
 from efl.elementary.separator import Separator
 
-from epack.utils import pkg_resource_get, VERSION, LICENSE, AUTHORS, INFO
+from epack.utils import pkg_resource_get, xdg_open, \
+    VERSION, LICENSE, AUTHORS, INFO, GITHUB
 
 
 EXPAND_BOTH = EVAS_HINT_EXPAND, EVAS_HINT_EXPAND
@@ -398,7 +399,7 @@ class InfoWin(StandardWindow):
         bt.show()
 
         bt = Button(self, text='Website',size_hint_align=FILL_HORIZ)
-        bt.disabled = True
+        bt.callback_clicked_add(lambda b: xdg_open(GITHUB))
         vbox.pack_end(bt)
         bt.show()
 
@@ -415,6 +416,7 @@ class InfoWin(StandardWindow):
         # main text
         self.entry = Entry(self, editable=False, scrollable=True, text=INFO,
                         size_hint_weight=EXPAND_BOTH, size_hint_align=FILL_BOTH)
+        self.entry.callback_anchor_clicked_add(lambda e,i: xdg_open(i.name))
         hbox.pack_end(self.entry)
         self.entry.show()
 

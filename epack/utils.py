@@ -19,8 +19,11 @@ from __future__ import absolute_import, print_function
 
 import os
 import magic
+from efl.ecore import Exe
 
 VERSION = '0.1.0'
+
+GITHUB = 'https://github.com/wfx/epack'
 
 AUTHORS = """
 <br>
@@ -51,7 +54,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.<br><br>
 
 You should have received a copy of the GNU General Public License 
-along with this program. If not, see<br><link>http://www.gnu.org/licenses/</link>
+along with this program. If not, see<br>
+<link><a href=http://www.gnu.org/licenses>http://www.gnu.org/licenses/</a></link>
 </align>
 """
 
@@ -95,3 +99,6 @@ def mime_type_query(fname):
 
 def pkg_resource_get(fname):
     return os.path.join(os.path.dirname(__file__), 'data', fname)
+
+def xdg_open(url_or_file):
+    Exe('xdg-open %s' % url_or_file)
