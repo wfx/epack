@@ -1,0 +1,98 @@
+# Traduzione italiana per Epack.
+# Copyright (C) 2015 Davide Andreoli <dave@gurumeditation.it>
+# This file is distributed under the same license as the Epack package.
+# Davide Andreoli <dave@gurumeditation.it>, 2015.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-12-30 15:16+0100\n"
+"PO-Revision-Date: 2014-12-30 14:53+0100\n"
+"Last-Translator: Wolfgang Morawetz <wolfgang.morawetz@gmail.com>\n"
+"Language-Team:\n"
+"Language: Deutsch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: bin/epack:63
+#, python-format
+msgid "Cannot read file:<br>%s"
+msgstr "Kann Datei nicht lesen:<br>%s"
+
+#: bin/epack:69
+msgid "Cannot read archive"
+msgstr "Kann Archiv nicht lesen"
+
+#: epack/gui.py:137
+msgid "Extract"
+msgstr "Entpacken"
+
+#: epack/gui.py:153
+msgid "Delete archive after extraction"
+msgstr "Archiv nach dem Entpacken löschen"
+
+#: epack/gui.py:161
+msgid "Create archive folder"
+msgstr "Erstelle Archiv Verzeichnis"
+
+#: epack/gui.py:212
+msgid "Reading archive, please wait..."
+msgstr "Lese Archiv, bitte warten..."
+
+#: epack/gui.py:220
+msgid "No archive loaded, click to choose a file"
+msgstr "Kein Archiv ausgewählt, bitte eine Datei auswählen"
+
+#: epack/gui.py:228
+#, python-format
+msgid "<b>Archive:</b> %s"
+msgstr "<b>Archiv:</b> %s"
+
+#: epack/gui.py:260
+msgid "Error"
+msgstr "Fehler"
+
+#: epack/gui.py:262
+msgid "Continue"
+msgstr "Fortfahren"
+
+#: epack/gui.py:266
+msgid "Exit"
+msgstr "Beenden"
+
+#: epack/gui.py:325
+msgid "Extracting files, please wait..."
+msgstr "Entpacke Dateien, bitte warten, ..."
+
+#: epack/gui.py:342
+msgid "Cancel"
+msgstr "Abrechen"
+
+#: epack/gui.py:387
+#, python-format
+msgid "Version: %s"
+msgstr "Version: %s"
+
+#: epack/gui.py:396
+msgid "Epack"
+msgstr "Epack"
+
+#: epack/gui.py:401
+msgid "Website"
+msgstr "Webseite"
+
+#: epack/gui.py:406
+msgid "Authors"
+msgstr "Autoren"
+
+#: epack/gui.py:411
+msgid "License"
+msgstr "Lizenz"
+
+#: epack/gui.py:461
+msgid "Choose an archive"
+msgstr "Wähle ein Archiv"
