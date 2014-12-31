@@ -22,7 +22,8 @@ import os
 from efl import ecore
 from efl import elementary
 from efl.evas import EVAS_HINT_EXPAND, EVAS_HINT_FILL
-from efl.elementary.window import StandardWindow
+from efl.elementary.background import Background
+from efl.elementary.window import Window, StandardWindow, ELM_WIN_DIALOG_BASIC
 from efl.elementary.innerwindow import InnerWindow
 from efl.elementary.box import Box
 from efl.elementary.ctxpopup import Ctxpopup
@@ -238,7 +239,7 @@ class MainWin(StandardWindow):
         sep.show()
 
         ic = Icon(self, standard='info', size_hint_min=(20,20))
-        ic.callback_clicked_add(lambda i: InfoWin())
+        ic.callback_clicked_add(lambda i: InfoWin(self))
         self.header_box.pack_end(ic)
         ic.show()
 
@@ -360,10 +361,16 @@ class MainWin(StandardWindow):
             self.prog_popup = None
 
 
-class InfoWin(StandardWindow):
-    def __init__(self):
-        StandardWindow.__init__(self, 'epack', 'Epack', autodel=True)
+class InfoWin(Window):
+    def __init__(self, parent):
+        Window.__init__(self, 'epack-info', ELM_WIN_DIALOG_BASIC, parent,
+                        title='Epack', autodel=True)
 
+        bg = Background(self, size_hint_weight=EXPAND_BOTH,
+                              size_hint_align=FILL_BOTH)
+        self.resize_object_add(bg)
+        bg.show()
+        
         fr = Frame(self, style='pad_large', size_hint_weight=EXPAND_BOTH,
                    size_hint_align=FILL_BOTH)
         self.resize_object_add(fr)
