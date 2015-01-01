@@ -1,14 +1,13 @@
-# Traduzione italiana per Epack.
-# Copyright (C) 2015 Davide Andreoli <dave@gurumeditation.it>
+# Deutsche Übersetzung für Epack.
+# Copyright (C) 2015 Wolfgang Morawetz <wolfgang.morawetz@gmail.com>
 # This file is distributed under the same license as the Epack package.
-# Davide Andreoli <dave@gurumeditation.it>, 2015.
+# Wolfgang Morawetz <wolfgang.morawetz@gmail.com>, 2015.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: epack 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-30 15:16+0100\n"
+"POT-Creation-Date: 2015-01-01 17:19+0100\n"
 "PO-Revision-Date: 2014-12-30 14:53+0100\n"
 "Last-Translator: Wolfgang Morawetz <wolfgang.morawetz@gmail.com>\n"
 "Language-Team:\n"
@@ -27,72 +26,72 @@ msgstr "Kann Datei nicht lesen:<br>%s"
 msgid "Cannot read archive"
 msgstr "Kann Archiv nicht lesen"
 
-#: epack/gui.py:137
+#: epack/gui.py:138
 msgid "Extract"
 msgstr "Entpacken"
 
-#: epack/gui.py:153
+#: epack/gui.py:154
 msgid "Delete archive after extraction"
 msgstr "Archiv nach dem Entpacken löschen"
 
-#: epack/gui.py:161
+#: epack/gui.py:162
 msgid "Create archive folder"
 msgstr "Erstelle Archiv Verzeichnis"
 
-#: epack/gui.py:212
+#: epack/gui.py:213
 msgid "Reading archive, please wait..."
 msgstr "Lese Archiv, bitte warten..."
 
-#: epack/gui.py:220
+#: epack/gui.py:221
 msgid "No archive loaded, click to choose a file"
 msgstr "Kein Archiv ausgewählt, bitte eine Datei auswählen"
 
-#: epack/gui.py:228
+#: epack/gui.py:229
 #, python-format
 msgid "<b>Archive:</b> %s"
 msgstr "<b>Archiv:</b> %s"
 
-#: epack/gui.py:260
+#: epack/gui.py:261
 msgid "Error"
 msgstr "Fehler"
 
-#: epack/gui.py:262
+#: epack/gui.py:263
 msgid "Continue"
 msgstr "Fortfahren"
 
-#: epack/gui.py:266
+#: epack/gui.py:267
 msgid "Exit"
 msgstr "Beenden"
 
-#: epack/gui.py:325
+#: epack/gui.py:326
 msgid "Extracting files, please wait..."
 msgstr "Entpacke Dateien, bitte warten, ..."
 
-#: epack/gui.py:342
+#: epack/gui.py:343
 msgid "Cancel"
 msgstr "Abrechen"
 
-#: epack/gui.py:387
+#: epack/gui.py:394
 #, python-format
 msgid "Version: %s"
 msgstr "Version: %s"
 
-#: epack/gui.py:396
+#: epack/gui.py:403
 msgid "Epack"
 msgstr "Epack"
 
-#: epack/gui.py:401
+#: epack/gui.py:408
 msgid "Website"
 msgstr "Webseite"
 
-#: epack/gui.py:406
+#: epack/gui.py:413
 msgid "Authors"
 msgstr "Autoren"
 
-#: epack/gui.py:411
+#: epack/gui.py:418
 msgid "License"
 msgstr "Lizenz"
 
-#: epack/gui.py:461
+#: epack/gui.py:468
 msgid "Choose an archive"
 msgstr "Wähle ein Archiv"

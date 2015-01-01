@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the Epack package.
 # Davide Andreoli <dave@gurumeditation.it>, 2015.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: epack 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-30 15:16+0100\n"
+"POT-Creation-Date: 2015-01-01 17:19+0100\n"
 "PO-Revision-Date: 2014-12-30 14:53+0100\n"
 "Last-Translator: Davide Andreoli <dave@gurumeditation.it>\n"
 "Language-Team:\n"
@@ -27,72 +26,72 @@ msgstr "Impossibile leggere il file:<br>%s"
 msgid "Cannot read archive"
 msgstr "Impossibile leggere l'archivio"
 
-#: epack/gui.py:137
+#: epack/gui.py:138
 msgid "Extract"
 msgstr "Estrai"
 
-#: epack/gui.py:153
+#: epack/gui.py:154
 msgid "Delete archive after extraction"
 msgstr "Elimina il file dopo aver estratto"
 
-#: epack/gui.py:161
+#: epack/gui.py:162
 msgid "Create archive folder"
 msgstr "Crea la cartella dell'archivio"
 
-#: epack/gui.py:212
+#: epack/gui.py:213
 msgid "Reading archive, please wait..."
 msgstr "Attendere, lettura archivio..."
 
-#: epack/gui.py:220
+#: epack/gui.py:221
 msgid "No archive loaded, click to choose a file"
 msgstr "Nessun archivio caricato, click per scegliere"
 
-#: epack/gui.py:228
+#: epack/gui.py:229
 #, python-format
 msgid "<b>Archive:</b> %s"
 msgstr "<b>Archivio:</b> %s"
 
-#: epack/gui.py:260
+#: epack/gui.py:261
 msgid "Error"
 msgstr "Errore"
 
-#: epack/gui.py:262
+#: epack/gui.py:263
 msgid "Continue"
 msgstr "Continua"
 
-#: epack/gui.py:266
+#: epack/gui.py:267
 msgid "Exit"
 msgstr "Esci"
 
-#: epack/gui.py:325
+#: epack/gui.py:326
 msgid "Extracting files, please wait..."
 msgstr "Attendere, estrazione in corso..."
 
-#: epack/gui.py:342
+#: epack/gui.py:343
 msgid "Cancel"
 msgstr "Annulla"
 
-#: epack/gui.py:387
+#: epack/gui.py:394
 #, python-format
 msgid "Version: %s"
 msgstr "Versione: %s"
 
-#: epack/gui.py:396
+#: epack/gui.py:403
 msgid "Epack"
 msgstr "Epack"
 
-#: epack/gui.py:401
+#: epack/gui.py:408
 msgid "Website"
 msgstr "Sito web"
 
-#: epack/gui.py:406
+#: epack/gui.py:413
 msgid "Authors"
 msgstr "Autori"
 
-#: epack/gui.py:411
+#: epack/gui.py:418
 msgid "License"
 msgstr "Licenza"
 
-#: epack/gui.py:461
+#: epack/gui.py:468
 msgid "Choose an archive"
 msgstr "Scegli un archivio"
