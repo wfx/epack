@@ -20,6 +20,11 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 from efl.ecore import Exe
 
+
+def xdg_open(url_or_file):
+    Exe('xdg-open %s' % url_or_file)
+
+
 VERSION = '0.1.0'
 
 GITHUB = 'https://github.com/wfx/epack'
@@ -72,12 +77,5 @@ feed youre kitty.<br>
 <br>
 </align>
 """
-
-
-def pkg_resource_get(fname):
-    return os.path.join(os.path.dirname(__file__), 'data', fname)
-
-def xdg_open(url_or_file):
-    Exe('xdg-open %s' % url_or_file)
 
 

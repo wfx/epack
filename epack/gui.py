@@ -386,8 +386,7 @@ class InfoWin(Window):
         vbox.show()
 
         # icon + version
-        ic = Icon(self, file=pkg_resource_get('epack64.png'),
-                  aspect_fixed=True, resizable=(False, False))
+        ic = Icon(self, standard='epack', size_hint_min=(64,64))
         vbox.pack_end(ic)
         ic.show()
 

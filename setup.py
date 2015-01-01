@@ -14,9 +14,6 @@ setup(
     requires = ['efl (>= 1.13)'],
     provides = ['epack'],
     packages = ['epack', 'epack.libarchive'],
-    package_data = {
-        'epack': ['data/*'],
-    },
     scripts = ['bin/epack'],
     data_files = [
         ('share/applications', ['data/epack.desktop']),
