@@ -18,6 +18,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import os
+import magic
 
 from efl import ecore
 
@@ -59,6 +60,10 @@ LIST_MAP = {
     'application/iso9660-image': 'bsdtar -tf -','application/x-iso9660-image': 'bsdtar -tf -'
 }
 
+def mime_type_query(fname):
+    m = magic.open(magic.MAGIC_MIME_TYPE)
+    m.load()
+    return m.file(fname)
 
 class ShellBackend(object):
     """ This backend use pv + bsdtar to extract archives

@@ -17,17 +17,29 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-from epack.backend_libarchive import LibarchiveBackend
-from epack.backend_shell import ShellBackend
+backends = []
+
+try:
+    from epack.backend_libarchive import LibarchiveBackend
+    backends.append(LibarchiveBackend)
+except Exception as e:
+    print('%s - Libarchive backend disabled' % e)
+
+try:
+    from epack.backend_shell import ShellBackend
+    backends.append(ShellBackend)
+except Exception as e:
+    print('%s - Shell backend disabled' % e)
 
 
 def load_backend(fname):
-    for backend in LibarchiveBackend, ShellBackend:
+    instance = None
+
+    for backend in backends:
         try:
             instance = backend(fname)
             break
         except Exception as e:
             print('%s: %s' % (backend.name, e))
-            instance = None
 
     return instance

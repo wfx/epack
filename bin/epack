@@ -29,7 +29,6 @@ from efl import elementary
 
 from epack.backend import load_backend
 from epack.gui import MainWin
-from epack.utils import base_dir
 
 
 
