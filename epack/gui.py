@@ -42,8 +42,7 @@ from efl.elementary.popup import Popup
 from efl.elementary.progressbar import Progressbar
 from efl.elementary.separator import Separator
 
-from epack.utils import pkg_resource_get, xdg_open, \
-    VERSION, LICENSE, AUTHORS, INFO, GITHUB
+from epack.utils import xdg_open, VERSION, LICENSE, AUTHORS, INFO, GITHUB
 
 
 EXPAND_BOTH = EVAS_HINT_EXPAND, EVAS_HINT_EXPAND
