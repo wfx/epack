@@ -9,7 +9,7 @@ epack is a tiny file extractor
 ## Requirements ##
 
 * Python 2.7 or higher
-* python-efl >= 1.11
+* python-efl >= 1.13
 * python-magic
 * Libarchive
 
@@ -18,7 +18,7 @@ epack is a tiny file extractor
 
 * For system-wide installation (needs administrator privileges):
 
- `(sudo) python setup.py install --record files.txt`
+ `(sudo) python setup.py install`
 
 * Install in a custom location:
 
@@ -28,7 +28,7 @@ epack is a tiny file extractor
 
 * For system.wide deinstallation (need administrator privileges):
 
- `(sudo) cat files.txt | xargs rm -rf`
+ `(sudo) python setup.py uninstall`
 
 ## Translations ##
 

@@ -2,3 +2,4 @@ build
 tests/test archive/
 *~
 epack/locale/
+installed_files.txt
