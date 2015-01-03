@@ -45,7 +45,6 @@ class EpackApplication(object):
         self.dest_folder = None  # destination folder for extract operation
         self.backend = None      # the backend currently in use
         self.delete_after_extract = False
-        self.quit_after_extract = True
 
         self.main_win = MainWin(self)
 
@@ -100,10 +99,12 @@ class EpackApplication(object):
         if result == 'success':
             if self.delete_after_extract:
                 os.remove(self.file_name)
-            if self.quit_after_extract:
-                elementary.exit()
+            self.main_win.ask_what_to_do_next()
         else:
             self.main_win.show_error_msg(result)
+
+    def exit(self):
+        elementary.exit()
 
 
 if __name__ == "__main__":

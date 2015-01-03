@@ -18,11 +18,31 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import os
+from distutils.spawn import find_executable
 from efl.ecore import Exe
 
 
 def xdg_open(url_or_file):
     Exe('xdg-open %s' % url_or_file)
+
+def open_in_terminal(folder):
+    term = None
+
+    if os.getenv('TERM') is not None:
+        term = find_executable(os.getenv('TERM'))
+
+    if term is None:
+        term = find_executable('terminology')
+
+    if term is None:
+        term = find_executable('x-terminal-emulator')
+
+    if term is None:
+        print("Cannot find a terminal emulator, please set your $TERM")
+    else:
+        Exe('%s %s' % (term, folder))
+
+    return term
 
 
 VERSION = '0.1.0'

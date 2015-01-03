@@ -42,7 +42,7 @@ from efl.elementary.popup import Popup
 from efl.elementary.progressbar import Progressbar
 from efl.elementary.separator import Separator
 
-from epack.utils import xdg_open, VERSION, LICENSE, AUTHORS, INFO, GITHUB
+import epack.utils as utils
 
 
 EXPAND_BOTH = EVAS_HINT_EXPAND, EVAS_HINT_EXPAND
@@ -71,7 +71,7 @@ class MainWin(StandardWindow):
         # the window
         StandardWindow.__init__(self, 'epack.py', 'Epack')
         self.autodel_set(True)
-        self.callback_delete_request_add(lambda o: elementary.exit())
+        self.callback_delete_request_add(lambda o: self.app.exit())
 
         # main vertical box
         vbox = Box(self, size_hint_weight=EXPAND_BOTH)
@@ -130,20 +130,10 @@ class MainWin(StandardWindow):
         sep.show()
 
         # extract button
-        btn_box = Box(table, horizontal=True)
-        table.pack(btn_box, 0, 2, 1, 2)
-        btn_box.show()
-        
-        self.btn1 = Button(table, text=_('Extract'))
-        self.btn1.callback_clicked_add(self.extract_btn_cb)
-        btn_box.pack_end(self.btn1)
-        self.btn1.show()
-
-        ic = Icon(table, standard='arrow_up', size_hint_min=(17,17))
-        self.btn2 = Button(table, content=ic)
-        self.btn2.callback_clicked_add(self.extract_opts_cb)
-        btn_box.pack_end(self.btn2)
-        self.btn2.show()
+        self.extract_btn = Button(table, text=_('Extract'))
+        self.extract_btn.callback_clicked_add(self.extract_btn_cb)
+        table.pack(self.extract_btn, 0, 2, 1, 2)
+        self.extract_btn.show()
 
         sep = Separator(table, horizontal=False)
         table.pack(sep, 1, 2, 1, 2)
@@ -175,28 +165,6 @@ class MainWin(StandardWindow):
 
     def del_check_cb(self, check):
         self.app.delete_after_extract = check.state
-
-    def extract_opts_cb(self, bt):
-        ctx = Ctxpopup(self, hover_parent=self)
-        ctx.item_append('Extract and open FileManager', None,
-                        self.change_post_extract_action, 'fm')
-        ctx.item_append('Extract and open in Terminal', None,
-                        self.change_post_extract_action, 'term')
-        ctx.item_append('Extract and close', None,
-                        self.change_post_extract_action, 'close')
-        x, y, w, h = bt.geometry
-        ctx.pos = (x + w / 2, y)
-        ctx.show()
-
-    def change_post_extract_action(self, ctx, item, action):
-        self.post_extract_action = action
-        if action == 'fm':
-            self.btn1.text = 'Extract and open FileManager'
-        elif action == 'term':
-            self.btn1.text = 'Extract and open in Terminal'
-        elif action == 'close':
-            self.btn1.text = 'Extract'
-        ctx.delete()
 
     def update_ui(self, listing_in_progress=False):
         self.header_box.clear()
@@ -242,7 +210,7 @@ class MainWin(StandardWindow):
         self.header_box.pack_end(ic)
         ic.show()
 
-        for widget in (self.btn1, self.btn2, self.fsb,
+        for widget in (self.extract_btn, self.fsb,
                        self.create_folder_chk, self.del_chk):
             widget.disabled = ui_disabled
 
@@ -264,7 +232,7 @@ class MainWin(StandardWindow):
         pop.part_content_set('button1', btn)
 
         btn = Button(self, text=_('Exit'))
-        btn.callback_clicked_add(lambda b: elementary.exit())
+        btn.callback_clicked_add(lambda b: self.app.exit())
         pop.part_content_set('button2', btn)
 
         pop.show()
@@ -359,6 +327,54 @@ class MainWin(StandardWindow):
             self.prog_popup.delete()
             self.prog_popup = None
 
+    def _open_fm_and_exit_cb(self, bt):
+        utils.xdg_open(self.app.dest_folder)
+        self.app.exit()
+
+    def _open_term_and_exit_cb(self, bt):
+        utils.open_in_terminal(self.app.dest_folder)
+        self.app.exit()
+
+    def ask_what_to_do_next(self):
+        pop = Popup(self)
+        pop.part_text_set('title,text', _('Extract completed'))
+
+        box = Box(pop)
+        pop.content = box
+        box.show()
+
+        lb = Label(pop, text=_('What to do next?'),
+                   size_hint_align=FILL_HORIZ)
+        box.pack_end(lb)
+        lb.show()
+
+        btn = Button(pop, text=_('Open Filemanager'),
+                     size_hint_align=FILL_HORIZ)
+        btn.callback_clicked_add(self._open_fm_and_exit_cb)
+        box.pack_end(btn)
+        btn.show()
+
+        btn = Button(pop, text=_('Open Terminal'),
+                     size_hint_align=FILL_HORIZ)
+        btn.callback_clicked_add(self._open_term_and_exit_cb)
+        box.pack_end(btn)
+        btn.show()
+
+        btn = Button(pop, text=_('Close this popup'),
+                     size_hint_align=FILL_HORIZ)
+        btn.callback_clicked_add(lambda b: pop.delete())
+        box.pack_end(btn)
+        btn.show()
+
+        btn = Button(pop, text=_('Exit'),
+                     size_hint_align=FILL_HORIZ)
+        btn.callback_clicked_add(lambda b: self.app.exit())
+        box.pack_end(btn)
+        btn.show()
+
+        pop.show()
+
+
 
 class InfoWin(Window):
     def __init__(self, parent):
@@ -389,7 +405,7 @@ class InfoWin(Window):
         vbox.pack_end(ic)
         ic.show()
 
-        lb = Label(self, text=_('Version: %s') % VERSION)
+        lb = Label(self, text=_('Version: %s') % utils.VERSION)
         vbox.pack_end(lb)
         lb.show()
 
@@ -399,29 +415,29 @@ class InfoWin(Window):
 
         # buttons
         bt = Button(self, text=_('Epack'), size_hint_align=FILL_HORIZ)
-        bt.callback_clicked_add(lambda b: self.entry.text_set(INFO))
+        bt.callback_clicked_add(lambda b: self.entry.text_set(utils.INFO))
         vbox.pack_end(bt)
         bt.show()
 
         bt = Button(self, text=_('Website'),size_hint_align=FILL_HORIZ)
-        bt.callback_clicked_add(lambda b: xdg_open(GITHUB))
+        bt.callback_clicked_add(lambda b: utils.xdg_open(utils.GITHUB))
         vbox.pack_end(bt)
         bt.show()
 
         bt = Button(self, text=_('Authors'), size_hint_align=FILL_HORIZ)
-        bt.callback_clicked_add(lambda b: self.entry.text_set(AUTHORS))
+        bt.callback_clicked_add(lambda b: self.entry.text_set(utils.AUTHORS))
         vbox.pack_end(bt)
         bt.show()
 
         bt = Button(self, text=_('License'), size_hint_align=FILL_HORIZ)
-        bt.callback_clicked_add(lambda b: self.entry.text_set(LICENSE))
+        bt.callback_clicked_add(lambda b: self.entry.text_set(utils.LICENSE))
         vbox.pack_end(bt)
         bt.show()
 
         # main text
-        self.entry = Entry(self, editable=False, scrollable=True, text=INFO,
+        self.entry = Entry(self, editable=False, scrollable=True, text=utils.INFO,
                         size_hint_weight=EXPAND_BOTH, size_hint_align=FILL_BOTH)
-        self.entry.callback_anchor_clicked_add(lambda e,i: xdg_open(i.name))
+        self.entry.callback_anchor_clicked_add(lambda e,i: utils.xdg_open(i.name))
         hbox.pack_end(self.entry)
         self.entry.show()
 
