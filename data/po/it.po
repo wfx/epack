@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: epack 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-01 17:19+0100\n"
+"POT-Creation-Date: 2015-01-03 22:58+0100\n"
 "PO-Revision-Date: 2014-12-30 14:53+0100\n"
 "Last-Translator: Davide Andreoli <dave@gurumeditation.it>\n"
 "Language-Team:\n"
@@ -17,81 +17,101 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: bin/epack:63
+#: bin/epack:62
 #, python-format
 msgid "Cannot read file:<br>%s"
 msgstr "Impossibile leggere il file:<br>%s"
 
-#: bin/epack:69
+#: bin/epack:68
 msgid "Cannot read archive"
 msgstr "Impossibile leggere l'archivio"
 
-#: epack/gui.py:138
+#: epack/gui.py:133
 msgid "Extract"
 msgstr "Estrai"
 
-#: epack/gui.py:154
+#: epack/gui.py:143
 msgid "Delete archive after extraction"
 msgstr "Elimina il file dopo aver estratto"
 
-#: epack/gui.py:162
+#: epack/gui.py:151
 msgid "Create archive folder"
 msgstr "Crea la cartella dell'archivio"
 
-#: epack/gui.py:213
+#: epack/gui.py:180
 msgid "Reading archive, please wait..."
 msgstr "Attendere, lettura archivio..."
 
-#: epack/gui.py:221
+#: epack/gui.py:188
 msgid "No archive loaded, click to choose a file"
 msgstr "Nessun archivio caricato, click per scegliere"
 
-#: epack/gui.py:229
+#: epack/gui.py:196
 #, python-format
 msgid "<b>Archive:</b> %s"
 msgstr "<b>Archivio:</b> %s"
 
-#: epack/gui.py:261
+#: epack/gui.py:228
 msgid "Error"
 msgstr "Errore"
 
-#: epack/gui.py:263
+#: epack/gui.py:230
 msgid "Continue"
 msgstr "Continua"
 
-#: epack/gui.py:267
+#: epack/gui.py:234 epack/gui.py:369
 msgid "Exit"
 msgstr "Esci"
 
-#: epack/gui.py:326
+#: epack/gui.py:293
 msgid "Extracting files, please wait..."
 msgstr "Attendere, estrazione in corso..."
 
-#: epack/gui.py:343
+#: epack/gui.py:310
 msgid "Cancel"
 msgstr "Annulla"
 
-#: epack/gui.py:394
+#: epack/gui.py:340
+msgid "Extract completed"
+msgstr "Operazione completata"
+
+#: epack/gui.py:346
+msgid "What to do next?"
+msgstr "Cosa facciamo adesso?"
+
+#: epack/gui.py:351
+msgid "Open Filemanager"
+msgstr "Apri Flemanager"
+
+#: epack/gui.py:357
+msgid "Open Terminal"
+msgstr "Apri Terminale"
+
+#: epack/gui.py:363
+msgid "Close this popup"
+msgstr "Chiudi questo popup"
+
+#: epack/gui.py:408
 #, python-format
 msgid "Version: %s"
 msgstr "Versione: %s"
 
-#: epack/gui.py:403
+#: epack/gui.py:417
 msgid "Epack"
 msgstr "Epack"
 
-#: epack/gui.py:408
+#: epack/gui.py:422
 msgid "Website"
 msgstr "Sito web"
 
-#: epack/gui.py:413
+#: epack/gui.py:427
 msgid "Authors"
 msgstr "Autori"
 
-#: epack/gui.py:418
+#: epack/gui.py:432
 msgid "License"
 msgstr "Licenza"
 
-#: epack/gui.py:468
+#: epack/gui.py:482
 msgid "Choose an archive"
 msgstr "Scegli un archivio"

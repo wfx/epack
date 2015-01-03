@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-01 17:19+0100\n"
+"POT-Creation-Date: 2015-01-03 22:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,81 +17,101 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bin/epack:63
+#: bin/epack:62
 #, python-format
 msgid "Cannot read file:<br>%s"
 msgstr ""
 
-#: bin/epack:69
+#: bin/epack:68
 msgid "Cannot read archive"
 msgstr ""
 
-#: epack/gui.py:138
+#: epack/gui.py:133
 msgid "Extract"
 msgstr ""
 
-#: epack/gui.py:154
+#: epack/gui.py:143
 msgid "Delete archive after extraction"
 msgstr ""
 
-#: epack/gui.py:162
+#: epack/gui.py:151
 msgid "Create archive folder"
 msgstr ""
 
-#: epack/gui.py:213
+#: epack/gui.py:180
 msgid "Reading archive, please wait..."
 msgstr ""
 
-#: epack/gui.py:221
+#: epack/gui.py:188
 msgid "No archive loaded, click to choose a file"
 msgstr ""
 
-#: epack/gui.py:229
+#: epack/gui.py:196
 #, python-format
 msgid "<b>Archive:</b> %s"
 msgstr ""
 
-#: epack/gui.py:261
+#: epack/gui.py:228
 msgid "Error"
 msgstr ""
 
-#: epack/gui.py:263
+#: epack/gui.py:230
 msgid "Continue"
 msgstr ""
 
-#: epack/gui.py:267
+#: epack/gui.py:234 epack/gui.py:369
 msgid "Exit"
 msgstr ""
 
-#: epack/gui.py:326
+#: epack/gui.py:293
 msgid "Extracting files, please wait..."
 msgstr ""
 
-#: epack/gui.py:343
+#: epack/gui.py:310
 msgid "Cancel"
 msgstr ""
 
-#: epack/gui.py:394
+#: epack/gui.py:340
+msgid "Extract completed"
+msgstr ""
+
+#: epack/gui.py:346
+msgid "What to do next?"
+msgstr ""
+
+#: epack/gui.py:351
+msgid "Open Filemanager"
+msgstr ""
+
+#: epack/gui.py:357
+msgid "Open Terminal"
+msgstr ""
+
+#: epack/gui.py:363
+msgid "Close this popup"
+msgstr ""
+
+#: epack/gui.py:408
 #, python-format
 msgid "Version: %s"
 msgstr ""
 
-#: epack/gui.py:403
+#: epack/gui.py:417
 msgid "Epack"
 msgstr ""
 
-#: epack/gui.py:408
+#: epack/gui.py:422
 msgid "Website"
 msgstr ""
 
-#: epack/gui.py:413
+#: epack/gui.py:427
 msgid "Authors"
 msgstr ""
 
-#: epack/gui.py:418
+#: epack/gui.py:432
 msgid "License"
 msgstr ""
 
-#: epack/gui.py:468
+#: epack/gui.py:482
 msgid "Choose an archive"
 msgstr ""
