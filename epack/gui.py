@@ -23,8 +23,7 @@ from efl import ecore
 from efl import elementary
 from efl.evas import EVAS_HINT_EXPAND, EVAS_HINT_FILL
 from efl.elementary.background import Background
-from efl.elementary.window import Window, StandardWindow, ELM_WIN_DIALOG_BASIC
-from efl.elementary.innerwindow import InnerWindow
+from efl.elementary.window import StandardWindow, DialogWindow
 from efl.elementary.box import Box
 from efl.elementary.ctxpopup import Ctxpopup
 from efl.elementary.entry import Entry
@@ -187,7 +186,7 @@ class MainWin(StandardWindow):
         elif self.app.file_name is None:
             bt = Button(self, text=_('No archive loaded, click to choose a file'),
                         size_hint_weight=EXPAND_HORIZ)
-            bt.callback_clicked_add(lambda b: FileChooserWin(self.app))
+            bt.callback_clicked_add(lambda b: FileChooserWin(self.app, self))
             self.header_box.pack_end(bt)
             bt.show()
 
@@ -375,17 +374,10 @@ class MainWin(StandardWindow):
         pop.show()
 
 
-
-class InfoWin(Window):
+class InfoWin(DialogWindow):
     def __init__(self, parent):
-        Window.__init__(self, 'epack-info', ELM_WIN_DIALOG_BASIC, parent,
-                        title='Epack', autodel=True)
+        DialogWindow.__init__(self, parent, 'epack-info', 'Epack', autodel=True)
 
-        bg = Background(self, size_hint_weight=EXPAND_BOTH,
-                              size_hint_align=FILL_BOTH)
-        self.resize_object_add(bg)
-        bg.show()
-        
         fr = Frame(self, style='pad_large', size_hint_weight=EXPAND_BOTH,
                    size_hint_align=FILL_BOTH)
         self.resize_object_add(fr)
@@ -476,10 +468,10 @@ class DestinationButton(FileselectorButton):
         self.label.text = '<align=left>%s</align>' % text
 
 
-class FileChooserWin(StandardWindow):
-    def __init__(self, app):
+class FileChooserWin(DialogWindow):
+    def __init__(self, app, parent):
         self.app = app
-        StandardWindow.__init__(self, 'epack.py', _('Choose an archive'))
+        DialogWindow.__init__(self, parent, 'epack.py', _('Choose an archive'))
         self.callback_delete_request_add(lambda o: self.delete())
 
         fs = Fileselector(self, expandable=False,
