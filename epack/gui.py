@@ -166,47 +166,48 @@ class MainWin(StandardWindow):
         self.app.delete_after_extract = check.state
 
     def update_ui(self, listing_in_progress=False):
-        self.header_box.clear()
+        box = self.header_box
+        box.clear()
         ui_disabled = True
 
         # file listing in progress
         if listing_in_progress:
-            spin = Progressbar(self, style='wheel', pulse_mode=True)
+            spin = Progressbar(box, style='wheel', pulse_mode=True)
             spin.pulse(True)
             spin.show()
-            self.header_box.pack_end(spin)
+            box.pack_end(spin)
 
-            lb = Label(self, text=_('Reading archive, please wait...'),
+            lb = Label(box, text=_('Reading archive, please wait...'),
                        size_hint_weight=EXPAND_HORIZ,
                        size_hint_align=(0.0, 0.5))
             lb.show()
-            self.header_box.pack_end(lb)
+            box.pack_end(lb)
 
         # no archive loaded
         elif self.app.file_name is None:
-            bt = Button(self, text=_('No archive loaded, click to choose a file'),
+            bt = Button(box, text=_('No archive loaded, click to choose a file'),
                         size_hint_weight=EXPAND_HORIZ)
             bt.callback_clicked_add(lambda b: FileChooserWin(self.app, self))
-            self.header_box.pack_end(bt)
+            box.pack_end(bt)
             bt.show()
 
         # normal operation (archive loaded and listed)
         else:
             txt = _('<b>Archive:</b> %s') % (os.path.basename(self.app.file_name))
-            lb = Label(self, text=txt, size_hint_weight=EXPAND_HORIZ,
+            lb = Label(box, text=txt, size_hint_weight=EXPAND_HORIZ,
                        size_hint_align=(0.0, 0.5))
-            self.header_box.pack_end(lb)
+            box.pack_end(lb)
             lb.show()
             ui_disabled = False
 
         # always show the about button
-        sep = Separator(self)
-        self.header_box.pack_end(sep)
+        sep = Separator(box)
+        box.pack_end(sep)
         sep.show()
 
-        ic = Icon(self, standard='dialog-info', size_hint_min=(24,24))
+        ic = Icon(box, standard='dialog-info', size_hint_min=(24,24))
         ic.callback_clicked_add(lambda i: InfoWin(self))
-        self.header_box.pack_end(ic)
+        box.pack_end(ic)
         ic.show()
 
         for widget in (self.extract_btn, self.fsb,
