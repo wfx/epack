@@ -3,8 +3,12 @@
 
 epack is a tiny file extractor
 
-![Screenshot](https://github.com/wfx/epack/blob/master/data/screenshot.jpg)
-
+![No archive](https://github.com/wfx/epack/blob/master/data/screenshot_no_archiv.png)
+![Choose archiv](https://github.com/wfx/epack/blob/master/data/screenshot_choose_archiv.png)
+![Reading archiv](https://github.com/wfx/epack/blob/master/data/screenshot_reading_archiv.png)
+![Main window](https://github.com/wfx/epack/blob/master/data/screenshot_main.png)
+![Info window](https://github.com/wfx/epack/blob/master/data/screenshot_info.png)
+![Extract completed](https://github.com/wfx/epack/blob/master/data/screenshot_extract_completed.png)
 
 ## Requirements ##
 
