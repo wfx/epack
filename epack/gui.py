@@ -112,7 +112,7 @@ class MainWin(StandardWindow):
                       size_hint_align=FILL_HORIZ)
         vbox.pack_end(frame)
         frame.show()
-        
+
         table = Table(frame)
         frame.content = table
         table.show()
