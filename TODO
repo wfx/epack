@@ -13,7 +13,9 @@ v 1.0.0
 
  * Fix slowdown issue with my 4GB test archive (only 2 big files inside)
 
- * Epack: Check if files/folders exist before overwrite ?
+ * Epack: Check if archive files/folders exist before overwrite ?
+
+ * Epack: Check if destination folder is writable before start to extract
 
  * Epack: open in fm/terminal should open INSIDE the folder if:
           1. the  "create fodler is checked"
@@ -21,6 +23,10 @@ v 1.0.0
 
  * Add a second .desktop file "Extract here" that automatically start
    the extraction and close the app when done
+
+ * Use tooltips on the buttons to explain the functionality ?
+
+ * Find a graphical way to make the "extract" button nicer
 
 
 v 2.0.0

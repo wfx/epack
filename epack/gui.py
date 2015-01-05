@@ -194,10 +194,13 @@ class MainWin(StandardWindow):
         # normal operation (archive loaded and listed)
         else:
             txt = _('<b>Archive:</b> %s') % (os.path.basename(self.app.file_name))
-            lb = Label(box, text=txt, size_hint_weight=EXPAND_HORIZ,
-                       size_hint_align=(0.0, 0.5))
-            box.pack_end(lb)
-            lb.show()
+            lb = Label(box, text='<align=left>%s</align>' % txt)
+            bt = Button(box, content=lb, size_hint_weight=EXPAND_HORIZ,
+                        size_hint_align=FILL_HORIZ)
+            bt.callback_clicked_add(lambda b: FileChooserWin(self.app, self))
+            box.pack_end(bt)
+            bt.show()
+            
             ui_disabled = False
 
         # always show the about button
@@ -244,6 +247,7 @@ class MainWin(StandardWindow):
 
     def tree_populate(self, file_list=None, parent=None):
         if file_list is not None:
+            self.file_list.clear()
             self._file_list = file_list
 
         if parent is None:
