@@ -100,10 +100,17 @@ class EpackApplication(object):
             if self.delete_after_extract:
                 os.remove(self.file_name)
             self.main_win.ask_what_to_do_next()
+        elif result == 'stopped':
+            pass
         else:
             self.main_win.show_error_msg(result)
 
+    def abort_operation(self):
+        self.backend.abort()
+
     def exit(self):
+        if self.backend:
+            self.backend.abort()
         elementary.exit()
 
 

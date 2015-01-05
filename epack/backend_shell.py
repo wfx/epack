@@ -95,6 +95,9 @@ class ShellBackend(object):
         exe.on_error_event_add(self._extract_stderr, progress_cb)
         exe.on_del_event_add(self._extract_done, done_cb)
 
+    def abort(self):
+        raise NotImplementedError
+
     def _list_stdout(self, command, event):
         self._contents.extend(event.lines)
 

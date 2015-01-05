@@ -307,8 +307,8 @@ class MainWin(StandardWindow):
         vbox.pack_end(pb)
         pb.show()
 
-        bt = Button(pp, text=_('Cancel'), disabled=True)
-        # TODO make the button actually work
+        bt = Button(pp, text=_('Cancel'))
+        bt.callback_clicked_add(lambda b: self.app.abort_operation())
         pp.part_content_set('button1', bt)
 
         self.prog_pbar = pb

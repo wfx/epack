@@ -47,17 +47,33 @@ class LibarchiveBackend(object):
 
         self._queue = Queue()
         self._total_size = 0
+        self._stoprequest = threading.Event()
+        self._thread = None
 
     def list_content(self, archive_file, done_cb):
+        self._cleanup()
         ecore.Timer(0.1, self._check_list_queue, done_cb)
-        threading.Thread(target=self._list_in_a_thread,
-                         args=(archive_file,)).start()
+        self._thread = threading.Thread(target=self._list_in_a_thread,
+                                        args=(archive_file,))
+        self._thread.start()
 
     def extract(self, archive_file, destination, progress_cb, done_cb):
+        self._cleanup()
         ecore.Timer(0.1, self._check_extract_queue, progress_cb, done_cb)
-        threading.Thread(target=self._extract_in_a_thread,
-                         args=(archive_file, destination)).start()
+        self._thread = threading.Thread(target=self._extract_in_a_thread,
+                                        args=(archive_file, destination))
+        self._thread.start()
 
+    def abort(self):
+        self._stoprequest.set()
+        self._cleanup()
+
+    def _cleanup(self):
+        if self._thread:
+            self._thread.join()
+            self._thread = None
+        self._stoprequest.clear()
+        
     def _list_in_a_thread(self, archive_file):
         L = list()
         self._total_size = 0
@@ -65,6 +81,8 @@ class LibarchiveBackend(object):
             for entry in archive:
                 L.append(entry.pathname)
                 self._total_size += entry.size
+                if self._stoprequest.isSet():
+                    break
         self._queue.put(sorted(L))
 
     def _extract_in_a_thread(self, archive_file, destination):
@@ -89,9 +107,15 @@ class LibarchiveBackend(object):
                                 perc = float(written) / self._total_size
                                 self._queue.put((perc, entry.pathname))
 
+                                if self._stoprequest.isSet():
+                                    raise RuntimeError('stopped')
+
                     # apply correct time and permission
                     os.utime(path, (-1, entry.mtime))
                     os.chmod(path, entry.perm)
+
+        except RuntimeError as e:
+            self._queue.put(('done', 'stopped'))
         except Exception as e:
             self._queue.put(('error', str(e)))
         else:
@@ -101,6 +125,7 @@ class LibarchiveBackend(object):
         if self._queue.empty():
             return ecore.ECORE_CALLBACK_RENEW
 
+        self._cleanup()
         done_cb(self._queue.get())
         return ecore.ECORE_CALLBACK_CANCEL
 
@@ -118,7 +143,7 @@ class LibarchiveBackend(object):
             progress_cb(item1, item2)
             return ecore.ECORE_CALLBACK_RENEW
 
-        # call the done callback
+        # extract completed
+        self._cleanup()
         done_cb(item2)
         return ecore.ECORE_CALLBACK_CANCEL
-
