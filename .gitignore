@@ -3,3 +3,5 @@ tests/test archive/
 *~
 epack/locale/
 installed_files.txt
+*.pyc
+__pycache__

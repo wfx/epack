@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 from distutils.core import setup
 from efl.utils.setup import build_extra, build_i18n, build_fdo, uninstall
+from epack import __version__
 
 
 setup(
     name = 'epack',
-    version = '0.1.0', # don't forget to change also in utils.py
+    version = __version__,
     description = 'A simple tool to extract any archive file',
     license="GNU General Public License v3 (GPLv3)",
     author = 'Wolfgang Morawetz (wfx) & Davide Andreoli (davemds)',

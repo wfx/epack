@@ -42,6 +42,7 @@ from efl.elementary.popup import Popup
 from efl.elementary.progressbar import Progressbar
 from efl.elementary.separator import Separator
 
+from epack import __version__
 import epack.utils as utils
 
 
@@ -396,7 +397,7 @@ class InfoWin(DialogWindow):
         vbox.pack_end(ic)
         ic.show()
 
-        lb = Label(self, text=_('Version: %s') % utils.VERSION)
+        lb = Label(self, text=_('Version: %s') % __version__)
         vbox.pack_end(lb)
         lb.show()
 

@@ -45,8 +45,6 @@ def open_in_terminal(folder):
     return term
 
 
-VERSION = '0.1.0'
-
 GITHUB = 'https://github.com/wfx/epack'
 
 AUTHORS = """
