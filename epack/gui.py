@@ -21,7 +21,8 @@ import os
 
 from efl import ecore
 from efl import elementary
-from efl.evas import EVAS_HINT_EXPAND, EVAS_HINT_FILL
+from efl.evas import EXPAND_BOTH, EXPAND_HORIZ, EXPAND_VERT, \
+    FILL_BOTH, FILL_HORIZ, FILL_VERT
 from efl.elementary.background import Background
 from efl.elementary.window import StandardWindow, DialogWindow
 from efl.elementary.box import Box
@@ -43,13 +44,6 @@ from efl.elementary.separator import Separator
 
 import epack.utils as utils
 
-
-EXPAND_BOTH = EVAS_HINT_EXPAND, EVAS_HINT_EXPAND
-EXPAND_HORIZ = EVAS_HINT_EXPAND, 0.0
-EXPAND_VERT = 0.0, EVAS_HINT_EXPAND
-FILL_BOTH = EVAS_HINT_FILL, EVAS_HINT_FILL
-FILL_HORIZ = EVAS_HINT_FILL, 0.0
-FILL_VERT = 0.0, EVAS_HINT_FILL
 
 
 def gl_fold_text_get(obj, part, item_data):
