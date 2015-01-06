@@ -440,8 +440,9 @@ class InfoWin(DialogWindow):
 class DestinationButton(FileselectorButton):
     def __init__(self, parent):
         FileselectorButton.__init__(self, parent,
-                    inwin_mode=False, folder_only=True,
-                    size_hint_weight=EXPAND_HORIZ, size_hint_align=FILL_HORIZ)
+                                    inwin_mode=False, folder_only=True,
+                                    size_hint_weight=EXPAND_HORIZ,
+                                    size_hint_align=FILL_HORIZ)
         self._text = ''
 
         box = Box(self, horizontal=True, padding=(3,0))
@@ -467,6 +468,12 @@ class DestinationButton(FileselectorButton):
         self._text = text
         self.label.text = '<align=left>%s</align>' % text
 
+        if os.path.isdir(text):
+            self.path = text
+        elif os.path.isdir(os.path.dirname(text)):
+            self.path = os.path.dirname(text)
+        else:
+            self.path = os.getcwd()
 
 class FileChooserWin(DialogWindow):
     def __init__(self, app, parent):
@@ -474,8 +481,7 @@ class FileChooserWin(DialogWindow):
         DialogWindow.__init__(self, parent, 'epack.py', _('Choose an archive'))
         self.callback_delete_request_add(lambda o: self.delete())
 
-        fs = Fileselector(self, expandable=False,
-                          path=os.path.expanduser('~'),
+        fs = Fileselector(self, expandable=False, path=os.getcwd(),
                           size_hint_weight=EXPAND_BOTH,
                           size_hint_align=FILL_BOTH)
         fs.callback_done_add(self.done_cb)
