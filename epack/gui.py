@@ -63,7 +63,7 @@ class MainWin(StandardWindow):
         self.post_extract_action = 'close' # or 'fm' or 'term'
 
         # the window
-        StandardWindow.__init__(self, 'epack.py', 'Epack')
+        StandardWindow.__init__(self, 'epack', 'Epack')
         self.autodel_set(True)
         self.callback_delete_request_add(lambda o: self.app.exit())
 

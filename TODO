@@ -30,6 +30,8 @@ v 1.0.0
 
  * Make the info text able to be translated
 
+ * Show the fileshooser starting from cwd, not always home
+
 
 v 2.0.0
 =======
