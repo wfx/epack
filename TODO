@@ -8,9 +8,6 @@ v 1.0.0
 
  * Info dialog: Need a close button
 
- * Libarchive: Apply folder permission only AFTER all the files inside
-               has been extracted.
-
  * Fix slowdown issue with my 4GB test archive (only 2 big files inside)
 
  * Epack: Check if archive files/folders exist before overwrite ?

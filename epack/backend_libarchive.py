@@ -87,6 +87,7 @@ class LibarchiveBackend(object):
 
     def _extract_in_a_thread(self, archive_file, destination):
         written = 0
+        perm_to_apply = []
         try:
             with self.libarchive.file_reader(archive_file) as archive:
                 for entry in archive:
@@ -97,6 +98,7 @@ class LibarchiveBackend(object):
                     if entry.isdir:
                         if not os.path.exists(path):
                             os.mkdir(path)
+                            perm_to_apply.insert(0, (path, entry.perm))
 
                     # or write a file to disk
                     else: # TODO test other special types
@@ -109,10 +111,15 @@ class LibarchiveBackend(object):
 
                                 if self._stoprequest.isSet():
                                     raise RuntimeError('stopped')
+                        # apply correct permission to files
+                        os.chmod(path, entry.perm)
 
-                    # apply correct time and permission
+                    # apply correct mtime to files and folders
                     os.utime(path, (-1, entry.mtime))
-                    os.chmod(path, entry.perm)
+
+            # apply correct permission to folders (should be well ordered)
+            for path, perm in perm_to_apply:
+                os.chmod(path, perm)
 
         except RuntimeError as e:
             self._queue.put(('done', 'stopped'))
