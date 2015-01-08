@@ -20,6 +20,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 import sys
 import gettext
+import getopt
 try:
     from urllib.parse import unquote
 except:
@@ -48,6 +49,7 @@ class EpackApplication(object):
 
         self.main_win = MainWin(self)
 
+        #g etopt and query on startup?
         if len(sys.argv) > 1:
             self.load_file(sys.argv[1])
 
@@ -68,7 +70,7 @@ class EpackApplication(object):
             self.main_win.show_error_msg(_('Cannot read archive'))
             return
 
-        # start the archive listing
+        # start the archive listing -> line:157
         self.file_name = fname
         self.dest_folder = os.path.dirname(fname)
         self.backend.list_content(fname, self._list_done_cb)
@@ -113,10 +115,49 @@ class EpackApplication(object):
             self.backend.abort()
         elementary.exit()
 
+def cmdline(argv = sys.argv[1:]):
+    cox = False
+    col = False
+    coL = False
+    coa = None
+    cod = None
+    help_msg = "\
+epack version: %s, Usage:\n\
+epack [-options] [archiv list] [destination folder]\n\
+Options:\n\
+-h help\t\tshow this help.\n\
+-x extract\textract archiv.\n\
+-a archiv\tarchiv (list)\n\
+-d list\t\tdestination folder.\n\
+-l list\t\tlist archiv.\n\
+-L license\tlist software license.\n"  % "beta"
+
+    try:
+        opts, args = getopt.gnu_getopt(argv,"h:x:a:d:l:L",["help", "extract", "archive", "destination", "list", "license"])
+    except getopt.GetoptError:
+        print (help_msg)
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            print (help_msg)
+            sys.exit()
+        elif opt in ('-x', '--extract'):
+            cox = True
+            if opt in ('-a', '--archive'):
+                coa = arg
+            if opt in ('-d', '--destination'):
+                cod = arg
+        elif opt in ("-l", "--list"):
+            col = True
+        elif opt in ("-L", "--License"):
+            coL = True
+    return (cox,coa,cod,col,coL)
 
 if __name__ == "__main__":
+    # something like this?
+    (x,a,d,l,L) = cmdline()
+
     elementary.init()
     app = EpackApplication()
     elementary.run()
     elementary.shutdown()
-
