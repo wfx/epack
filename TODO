@@ -1,10 +1,10 @@
 
 Roadmap:
-----------------------------------------------------------------------
+========
 
 
 v 1.0.0
-=======
+-------
 
  * Info dialog: Need a close button
 
@@ -27,8 +27,12 @@ v 1.0.0
 
  * Make the info text able to be translated
 
+ * Remove tags from the license text on console
+
+ * Make the -l -x -q options to actually work
+
 
 v 2.0.0
-=======
+-------
 
  * Ability to also write archives

@@ -20,7 +20,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 import sys
 import gettext
-import getopt
+import argparse
 try:
     from urllib.parse import unquote
 except:
@@ -41,7 +41,7 @@ gettext.install('epack', names='ngettext', localedir=locale_dir)
 
 
 class EpackApplication(object):
-    def __init__(self):
+    def __init__(self, args):
         self.file_name = None    # full path of the loaded archive
         self.dest_folder = None  # destination folder for extract operation
         self.backend = None      # the backend currently in use
@@ -49,9 +49,10 @@ class EpackApplication(object):
 
         self.main_win = MainWin(self)
 
-        #g etopt and query on startup?
-        if len(sys.argv) > 1:
-            self.load_file(sys.argv[1])
+        if args.archive:
+            self.load_file(args.archive)
+        if args.destination:
+            self.dest_folder = args.destination
 
     def load_file(self, fname):
         # cleanup and check file name
@@ -115,49 +116,27 @@ class EpackApplication(object):
             self.backend.abort()
         elementary.exit()
 
-def cmdline(argv = sys.argv[1:]):
-    cox = False
-    col = False
-    coL = False
-    coa = None
-    cod = None
-    help_msg = "\
-epack version: %s, Usage:\n\
-epack [-options] [archiv list] [destination folder]\n\
-Options:\n\
--h help\t\tshow this help.\n\
--x extract\textract archiv.\n\
--a archiv\tarchiv (list)\n\
--d list\t\tdestination folder.\n\
--l list\t\tlist archiv.\n\
--L license\tlist software license.\n"  % "beta"
-
-    try:
-        opts, args = getopt.gnu_getopt(argv,"h:x:a:d:l:L",["help", "extract", "archive", "destination", "list", "license"])
-    except getopt.GetoptError:
-        print (help_msg)
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ('-h', '--help'):
-            print (help_msg)
-            sys.exit()
-        elif opt in ('-x', '--extract'):
-            cox = True
-            if opt in ('-a', '--archive'):
-                coa = arg
-            if opt in ('-d', '--destination'):
-                cod = arg
-        elif opt in ("-l", "--list"):
-            col = True
-        elif opt in ("-L", "--License"):
-            coL = True
-    return (cox,coa,cod,col,coL)
 
 if __name__ == "__main__":
-    # something like this?
-    (x,a,d,l,L) = cmdline()
+
+    parser = argparse.ArgumentParser(description='A tiny file extractor.')
+    parser.add_argument('-x', '--extract', action='store_true',
+                        help='Start the extraction on startup')
+    parser.add_argument('-l', '--list', action='store_true',
+                        help='Show the archive content')
+    parser.add_argument('-q', '--quit', action='store_true',
+                        help='Quit when the extraction is completed')
+    parser.add_argument('-L', '--license', action='store_true')
+    parser.add_argument('archive', nargs='?')
+    parser.add_argument('destination', nargs='?')
+    args = parser.parse_args()
+
+    if args.license is True:
+        from epack.utils import LICENSE
+        print(LICENSE) # TODO remove tags from the license text
+        sys.exit(0)
 
     elementary.init()
-    app = EpackApplication()
+    app = EpackApplication(args)
     elementary.run()
     elementary.shutdown()
