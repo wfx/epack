@@ -29,7 +29,9 @@ v 1.0.0
 
  * Remove tags from the license text on console
 
- * Make the -l -x -q options to actually work
+ * Make the -l option to actually work
+
+ * Also support cmdline options without '-', as the tar command
 
 
 v 2.0.0

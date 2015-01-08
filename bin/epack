@@ -46,6 +46,7 @@ class EpackApplication(object):
         self.dest_folder = None  # destination folder for extract operation
         self.backend = None      # the backend currently in use
         self.delete_after_extract = False
+        self.args = args
 
         self.main_win = MainWin(self)
 
@@ -85,6 +86,8 @@ class EpackApplication(object):
     def _list_done_cb(self, file_list):
         self.main_win.tree_populate(file_list)
         self.main_win.update_ui()
+        if self.args.extract is True:
+            self.extract_archive()
 
     def extract_archive(self):
         if not os.path.exists(self.dest_folder):
@@ -102,7 +105,10 @@ class EpackApplication(object):
         if result == 'success':
             if self.delete_after_extract:
                 os.remove(self.file_name)
-            self.main_win.ask_what_to_do_next()
+            if self.args.quit is True:
+                self.exit()
+            else:
+                self.main_win.ask_what_to_do_next()
         elif result == 'stopped':
             pass
         else:

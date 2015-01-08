@@ -60,7 +60,7 @@ def gl_file_text_get(obj, part, item_data):
 class MainWin(StandardWindow):
     def __init__(self, app):
         self.app = app
-        self.post_extract_action = 'close' # or 'fm' or 'term'
+        self.prog_popup = None
 
         # the window
         StandardWindow.__init__(self, 'epack', 'Epack')
