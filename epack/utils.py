@@ -40,7 +40,11 @@ def open_in_terminal(folder):
     if term is None:
         print("Cannot find a terminal emulator, please set your $TERM")
     else:
-        Exe('%s "%s"' % (term, folder))
+        if 'terminology' in term:
+            Exe('%s --current-directory "%s"' % (term, folder))
+        else:
+            # this works for gnome-terminal, dunno other terms :/
+            Exe('%s --working-directory "%s"' % (term, folder))
 
     return term
 
