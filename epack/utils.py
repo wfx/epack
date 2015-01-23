@@ -23,7 +23,7 @@ from efl.ecore import Exe
 
 
 def xdg_open(url_or_file):
-    Exe('xdg-open %s' % url_or_file)
+    Exe('xdg-open "%s"' % url_or_file)
 
 def open_in_terminal(folder):
     term = None
@@ -40,7 +40,7 @@ def open_in_terminal(folder):
     if term is None:
         print("Cannot find a terminal emulator, please set your $TERM")
     else:
-        Exe('%s %s' % (term, folder))
+        Exe('%s "%s"' % (term, folder))
 
     return term
 
