@@ -98,10 +98,15 @@ class LibarchiveBackend(object):
                     if entry.isdir:
                         if not os.path.exists(path):
                             os.mkdir(path)
-                            perm_to_apply.insert(0, (path, entry.perm))
+                        perm_to_apply.insert(0, (path, entry.perm))
 
                     # or write a file to disk
                     else: # TODO test other special types
+                        # ensure the folder where the file reside exists
+                        dirname = os.path.dirname(path)
+                        if not os.path.exists(dirname):
+                            os.makedirs(dirname)
+                        # write the file
                         with open(path, 'wb') as f:
                             for block in entry.get_blocks():
                                 f.write(block)
