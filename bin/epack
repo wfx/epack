@@ -47,7 +47,7 @@ class EpackApplication(object):
         # destination folder for extract operation
         #xdg-user-dir DOWNLOAD
         self.dest_folder = os.popen("xdg-user-dir DOWNLOAD").readlines()
-        self.dest_folder = os.path.basename(self.dest_folder[0])
+        self.dest_folder = self.dest_folder[0]
 
         self.backend = None      # the backend currently in use
         self.delete_after_extract = False
