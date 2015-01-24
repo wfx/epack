@@ -43,12 +43,7 @@ gettext.install('epack', names='ngettext', localedir=locale_dir)
 class EpackApplication(object):
     def __init__(self, args):
         self.file_name = None    # full path of the loaded archive
-
-        # destination folder for extract operation
-        #xdg-user-dir DOWNLOAD
-        self.dest_folder = os.popen("xdg-user-dir DOWNLOAD").readlines()
-        self.dest_folder = self.dest_folder[0]
-
+        self.dest_folder = None  # destination folder for extract operation
         self.backend = None      # the backend currently in use
         self.delete_after_extract = False
         self.args = args
