@@ -1,0 +1,118 @@
+# Spain translation for Epack.
+# Copyright (C) 2015 Wolfgang Morawetz <wolfgang.morawetz@gmail.com>
+# This file is distributed under the same license as the Epack package.
+# Wolfgang Morawetz <wolfgang.morawetz@gmail.com>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: epack 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-03 22:58+0100\n"
+"PO-Revision-Date: 2014-12-30 14:53+0100\n"
+"Last-Translator: Wolfgang Morawetz <wolfgang.morawetz@gmail.com>\n"
+"Language-Team:\n"
+"Language: Deutsch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: bin/epack:62
+#, python-format
+msgid "Cannot read file:<br>%s"
+msgstr "No se pudo leer el archivo:<br>%s"
+
+#: bin/epack:68
+msgid "Cannot read archive"
+msgstr "No se pudo leer el archivo"
+
+#: epack/gui.py:133
+msgid "Extract"
+msgstr "Extraer"
+
+#: epack/gui.py:143
+msgid "Delete archive after extraction"
+msgstr "Borrar archivo luego de la extración"
+
+#: epack/gui.py:151
+msgid "Create archive folder"
+msgstr "Crear carpeta de archivos"
+
+#: epack/gui.py:180
+msgid "Reading archive, please wait..."
+msgstr "Leyendo archivo, por favor aguarde..."
+
+#: epack/gui.py:188
+msgid "No archive loaded, click to choose a file"
+msgstr "Archivo no cargado, cliquear para elegir archivo"
+
+#: epack/gui.py:196
+#, python-format
+msgid "<b>Archive:</b> %s"
+msgstr "<b>Archivo:</b> %s"
+
+#: epack/gui.py:228
+msgid "Error"
+msgstr "Error"
+
+#: epack/gui.py:230
+msgid "Continue"
+msgstr "Continuar"
+
+#: epack/gui.py:234 epack/gui.py:369
+msgid "Exit"
+msgstr "Salir"
+
+#: epack/gui.py:293
+msgid "Extracting files, please wait..."
+msgstr "Extrayendo archivo, por favor aguarde"
+
+#: epack/gui.py:310
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: epack/gui.py:340
+msgid "Extract completed"
+msgstr "Extración completa"
+
+#: epack/gui.py:346
+msgid "What to do next?"
+msgstr "¿Qué hacer luego?"
+
+#: epack/gui.py:351
+msgid "Open Filemanager"
+msgstr "Abrir manejador de archivos"
+
+#: epack/gui.py:357
+msgid "Open Terminal"
+msgstr "Abrir terminal"
+
+#: epack/gui.py:363
+msgid "Close this popup"
+msgstr "Cerrar esta ventana"
+
+#: epack/gui.py:408
+#, python-format
+msgid "Version: %s"
+msgstr "Versión: %s"
+
+
+#: epack/gui.py:417
+msgid "Epack"
+msgstr "Epack"
+
+#: epack/gui.py:422
+msgid "Website"
+msgstr "Sitio Web"
+
+#: epack/gui.py:427
+msgid "Authors"
+msgstr "Autores"
+
+#: epack/gui.py:432
+msgid "License"
+msgstr "Licencia"
+
+#: epack/gui.py:482
+msgid "Choose an archive"
+msgstr "Elegir archivo"
