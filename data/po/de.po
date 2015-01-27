@@ -73,23 +73,23 @@ msgstr "Abrechen"
 
 #: epack/gui.py:340
 msgid "Extract completed"
-msgstr ""
+msgstr "Archiv ist entpackt"
 
 #: epack/gui.py:346
 msgid "What to do next?"
-msgstr ""
+msgstr "Als nächstes?"
 
 #: epack/gui.py:351
 msgid "Open Filemanager"
-msgstr ""
+msgstr "Öffne Dateimanager"
 
 #: epack/gui.py:357
 msgid "Open Terminal"
-msgstr ""
+msgstr "Öffne Terminal"
 
 #: epack/gui.py:363
 msgid "Close this popup"
-msgstr ""
+msgstr "Schliese dieses Fenster"
 
 #: epack/gui.py:408
 #, python-format
