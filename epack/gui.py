@@ -154,7 +154,7 @@ class MainWin(StandardWindow):
         self.update_ui()
 
         # show the window
-        self.resize(300, 300)
+        self.resize(300, 380)
         self.show()
 
     def del_check_cb(self, check):
@@ -439,8 +439,8 @@ class InfoWin(DialogWindow):
 
 class DestinationButton(FileselectorButton):
     def __init__(self, parent):
-        FileselectorButton.__init__(self, parent,
-                                    inwin_mode=False, folder_only=True,
+        FileselectorButton.__init__(self, parent, inwin_mode=True,
+                                    folder_only=True, expandable=False,
                                     size_hint_weight=EXPAND_HORIZ,
                                     size_hint_align=FILL_HORIZ)
         self._text = ''
@@ -474,6 +474,7 @@ class DestinationButton(FileselectorButton):
             self.path = os.path.dirname(text)
         else:
             self.path = os.getcwd()
+
 
 class FileChooserWin(DialogWindow):
     def __init__(self, app, parent):
