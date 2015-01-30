@@ -20,7 +20,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 import sys
 import gettext
-import re
 import argparse
 try:
     from urllib.parse import unquote
@@ -123,10 +122,6 @@ class EpackApplication(object):
             self.backend.abort()
         elementary.exit()
 
-def rm_tags(html):
-    rec = re.compile(r'<[^>]+>')
-    return re.sub(rec,'', html)
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='A tiny file extractor.')
@@ -143,7 +138,9 @@ if __name__ == "__main__":
 
     if args.license is True:
         from epack.utils import LICENSE
-        print(rm_tags(LICENSE))
+        import re
+        rec = re.compile(r'<[^>]+>')
+        print(re.sub(rec,'', LICENSE))
         sys.exit(0)
 
     elementary.init()
