@@ -195,7 +195,7 @@ class MainWin(StandardWindow):
             bt.callback_clicked_add(lambda b: FileChooserWin(self.app, self))
             box.pack_end(bt)
             bt.show()
-            
+
             ui_disabled = False
 
         # always show the about button
@@ -480,7 +480,7 @@ class FileChooserWin(DialogWindow):
     def __init__(self, app, parent):
         self.app = app
         DialogWindow.__init__(self, parent, 'epack.py', _('Choose an archive'))
-        self.callback_delete_request_add(lambda o: self.delete())
+
 
         fs = Fileselector(self, expandable=False, path=os.getcwd(),
                           size_hint_weight=EXPAND_BOTH,
