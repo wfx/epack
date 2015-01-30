@@ -124,8 +124,8 @@ class EpackApplication(object):
         elementary.exit()
 
 def rm_tags(html):
-  rec = re.compile(r'<[^>]+>')
-  return re.sub(rec,'', html)
+    rec = re.compile(r'<[^>]+>')
+    return re.sub(rec,'', html)
 
 if __name__ == "__main__":
 
