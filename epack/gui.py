@@ -23,10 +23,9 @@ from efl import ecore
 from efl import elementary
 from efl.evas import EXPAND_BOTH, EXPAND_HORIZ, EXPAND_VERT, \
     FILL_BOTH, FILL_HORIZ, FILL_VERT
-from efl.elementary.background import Background
 from efl.elementary.window import StandardWindow, DialogWindow
+from efl.elementary.innerwindow import InnerWindow
 from efl.elementary.box import Box
-from efl.elementary.ctxpopup import Ctxpopup
 from efl.elementary.entry import Entry
 from efl.elementary.icon import Icon
 from efl.elementary.label import Label
@@ -36,7 +35,6 @@ from efl.elementary.genlist import Genlist, GenlistItemClass, \
 from efl.elementary.button import Button
 from efl.elementary.table import Table
 from efl.elementary.check import Check
-from efl.elementary.fileselector_button import FileselectorButton
 from efl.elementary.fileselector import Fileselector
 from efl.elementary.popup import Popup
 from efl.elementary.progressbar import Progressbar
@@ -113,8 +111,7 @@ class MainWin(StandardWindow):
         table.show()
 
         # FileSelectorButton
-        self.fsb = DestinationButton(self)
-        self.fsb.callback_file_chosen_add(self.chosen_folder_cb)
+        self.fsb = DestinationButton(app, self)
         table.pack(self.fsb, 0, 0, 3, 1)
         self.fsb.show()
 
@@ -178,25 +175,24 @@ class MainWin(StandardWindow):
             lb.show()
             box.pack_end(lb)
 
-        # no archive loaded
-        elif self.app.file_name is None:
-            bt = Button(box, text=_('No archive loaded, click to choose a file'),
-                        size_hint_weight=EXPAND_HORIZ)
-            bt.callback_clicked_add(lambda b: FileChooserWin(self.app, self))
-            box.pack_end(bt)
-            bt.show()
-
-        # normal operation (archive loaded and listed)
+        # or header button
         else:
-            txt = _('<b>Archive:</b> %s') % (os.path.basename(self.app.file_name))
+            if self.app.file_name is None:
+                txt = _('No archive loaded, click to choose a file')
+            else:
+                ui_disabled = False
+                txt = _('<b>Archive:</b> %s') % \
+                      (os.path.basename(self.app.file_name))
+
             lb = Label(box, text='<align=left>%s</align>' % txt)
             bt = Button(box, content=lb, size_hint_weight=EXPAND_HORIZ,
-                        size_hint_align=FILL_HORIZ)
-            bt.callback_clicked_add(lambda b: FileChooserWin(self.app, self))
+                        size_hint_fill=FILL_HORIZ)
+            bt.callback_clicked_add(lambda b: \
+                        FileSelectorInwin(self, _('Choose an archive'),
+                                          self._archive_selected_cb,
+                                          path=os.getcwd()))
             box.pack_end(bt)
             bt.show()
-
-            ui_disabled = False
 
         # always show the about button
         sep = Separator(box)
@@ -213,6 +209,10 @@ class MainWin(StandardWindow):
             widget.disabled = ui_disabled
 
         self.update_fsb_label()
+
+    def _archive_selected_cb(self, path):
+        if os.path.isfile(path):
+            self.app.load_file(path)
 
     def update_fsb_label(self):
         if self.create_folder_chk.state is True:
@@ -234,11 +234,6 @@ class MainWin(StandardWindow):
         pop.part_content_set('button2', btn)
 
         pop.show()
-
-    def chosen_folder_cb(self, fsb, folder):
-        if folder:
-            self.app.dest_folder = folder
-            self.update_fsb_label()
 
     def tree_populate(self, file_list=None, parent=None):
         if file_list is not None:
@@ -437,13 +432,14 @@ class InfoWin(DialogWindow):
         self.show()
 
 
-class DestinationButton(FileselectorButton):
-    def __init__(self, parent):
-        FileselectorButton.__init__(self, parent, inwin_mode=True,
-                                    folder_only=True, expandable=False,
-                                    size_hint_weight=EXPAND_HORIZ,
-                                    size_hint_align=FILL_HORIZ)
+class DestinationButton(Button):
+    def __init__(self, app, parent):
+        self.app = app
         self._text = ''
+
+        Button.__init__(self, parent,size_hint_weight=EXPAND_HORIZ,
+                                     size_hint_align=FILL_HORIZ)
+        self.callback_clicked_add(self._btn_clicked_cb)
 
         box = Box(self, horizontal=True, padding=(3,0))
         self.content = box
@@ -459,6 +455,22 @@ class DestinationButton(FileselectorButton):
         box.pack_end(self.label)
         self.label.show()
 
+    def _btn_clicked_cb(self, btn):
+        if os.path.isdir(self._text):
+            path = self._text
+        elif os.path.isdir(os.path.dirname(self._text)):
+            path = os.path.dirname(self._text)
+        else:
+            path = os.getcwd()
+        FileSelectorInwin(self.app.main_win, _('Choose destination'),
+                          self._fs_done_cb, folder_only=True,
+                          path=path)
+
+    def _fs_done_cb(self, path):
+        if path:
+            self.app.dest_folder = path
+            self.app.main_win.update_fsb_label()
+
     @property
     def text(self):
         return self._text
@@ -468,38 +480,38 @@ class DestinationButton(FileselectorButton):
         self._text = text
         self.label.text = '<align=left>%s</align>' % text
 
-        if os.path.isdir(text):
-            self.path = text
-        elif os.path.isdir(os.path.dirname(text)):
-            self.path = os.path.dirname(text)
-        else:
-            self.path = os.getcwd()
 
+class FileSelectorInwin(Fileselector):
+    def __init__(self, parent, title, done_cb, **kargs):
+        self._user_cb = done_cb
 
-class FileChooserWin(DialogWindow):
-    def __init__(self, app, parent):
-        self.app = app
-        DialogWindow.__init__(self, parent, 'epack.py', _('Choose an archive'))
-        self.callback_delete_request_add(lambda o: self.delete())
-        fs = Fileselector(self, expandable=False, path=os.getcwd(),
-                          size_hint_weight=EXPAND_BOTH,
-                          size_hint_align=FILL_BOTH)
-        fs.callback_done_add(self.done_cb)
-        fs.callback_activated_add(self.done_cb)
+        self._inwin = InnerWindow(parent)
+
+        vbox = Box(self._inwin)
+        self._inwin.content = vbox
+        vbox.show()
+
+        lb = Label(vbox, text='<b>%s</b>' % title)
+        vbox.pack_end(lb)
+        lb.show()
+
+        Fileselector.__init__(self, vbox, expandable=False,
+                              size_hint_weight=EXPAND_BOTH,
+                              size_hint_align=FILL_BOTH, **kargs)
+        self.callback_done_add(self._fileselector_done_cb)
+        self.callback_activated_add(self._fileselector_done_cb)
         # TODO this filter seems not to work well...need fixing
         # fs.mime_types_filter_append(list(EXTRACT_MAP.keys()), 'Archive files')
         # fs.mime_types_filter_append(['*'], 'All files')
-        fs.show()
-
-        self.resize_object_add(fs)
-        self.resize(300, 400)
+        vbox.pack_end(self)
         self.show()
 
-    def done_cb(self, fs, path):
-        if path is None:
-            self.delete()
-        elif os.path.isfile(path):
-            self.app.load_file(path)
-            self.delete()
+        self._inwin.activate()
 
+    def delete(self):
+        self._inwin.delete()
 
+    def _fileselector_done_cb(self, fs, path):
+        if path is not None:
+            self._user_cb(path)
+        self.delete()
