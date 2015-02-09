@@ -2,18 +2,18 @@
   "JSON_Version":"1",
   "Settings":
   {
-    "project":"New Project"
+    "project":"Epack"
   },
   "Resources":
   {
     "Images":
     {
-      "icon_epack":"/home/wfx/Projects/epack/data/icons/128x128/apps/epack.png"
+      "icon_epack":"/home/wfx/Projects/epack/data/icons/64x64/apps/epack.png"
     }
   },
   "Widgets":
   {
-    "elm_win1":
+    "elm_win_main":
     {
       "Desc":
       {
@@ -37,7 +37,7 @@
     {
       "Desc":
       {
-        "parent":"elm_win1",
+        "parent":"elm_win_main",
         "class":"Elm_Bg"
       },
       "Properties":
@@ -51,7 +51,7 @@
     {
       "Desc":
       {
-        "parent":"elm_win1",
+        "parent":"elm_win_main",
         "class":"Elm_Box"
       },
       "Properties":
@@ -121,12 +121,13 @@
         "Evas.Object.size_hint_align":[-1, -1]
       }
     },
-    "elm_win2":
+    "elm_win_about":
     {
       "Desc":
       {
         "parent":null,
-        "class":"Elm_Win"
+        "class":"Elm_Win",
+        "public":true
       },
       "Properties":
       {
@@ -146,7 +147,7 @@
     {
       "Desc":
       {
-        "parent":"elm_win2",
+        "parent":"elm_win_about",
         "class":"Elm_Bg"
       },
       "Properties":
@@ -160,7 +161,7 @@
     {
       "Desc":
       {
-        "parent":"elm_win2",
+        "parent":"elm_win_about",
         "class":"Elm_Box"
       },
       "Properties":
@@ -188,7 +189,7 @@
         "Evas.Object.size_hint_weight":[0.25, 1],
         "Elm_Box.padding":[0, 0]
       },
-      "Contains":["elm_image1", "elm_separator1", "elm_button1", "elm_button2", "elm_button3", "elm_button4"]
+      "Contains":["elm_image1", "elm_label1", "elm_separator1", "elm_button_name", "elm_button_website", "elm_button_authors", "elm_button_license"]
     },
     "elm_box7":
     {
@@ -219,7 +220,7 @@
         "Evas.Object.visibility":[true],
         "Evas.Object.size":[40, 40],
         "Efl.File.file":["icon_epack", null],
-        "Evas.Object.size_hint_min":[48, 48]
+        "Evas.Object.size_hint_min":[64, 64]
       }
     },
     "elm_separator1":
@@ -236,64 +237,72 @@
         "Elm_Separator.horizontal":[true]
       }
     },
-    "elm_button1":
+    "elm_button_name":
     {
       "Desc":
       {
         "parent":"elm_box6",
-        "class":"Elm_Button"
+        "class":"Elm_Button",
+        "public":true
       },
       "Properties":
       {
         "Evas.Object.size_hint_weight":[1, 1],
         "Evas.Object.visibility":[true],
-        "Elm_Widget.part_text":[null, "Button"],
-        "Evas.Object.size":[73, 30]
+        "Evas.Object.size":[73, 30],
+        "Evas.Object.size_hint_align":[-1, 0.50],
+        "Elm_Widget.part_text":[null, "Name"]
       }
     },
-    "elm_button2":
+    "elm_button_website":
     {
       "Desc":
       {
         "parent":"elm_box6",
-        "class":"Elm_Button"
+        "class":"Elm_Button",
+        "public":true
       },
       "Properties":
       {
         "Evas.Object.size_hint_weight":[1, 1],
         "Evas.Object.visibility":[true],
-        "Elm_Widget.part_text":[null, "Button"],
-        "Evas.Object.size":[73, 30]
+        "Evas.Object.size":[73, 30],
+        "Evas.Object.size_hint_align":[-1, 0.50],
+        "Elm_Widget.part_text":[null, "Website"]
       }
     },
-    "elm_button3":
+    "elm_button_authors":
     {
       "Desc":
       {
         "parent":"elm_box6",
-        "class":"Elm_Button"
+        "class":"Elm_Button",
+        "public":true
       },
       "Properties":
       {
         "Evas.Object.size_hint_weight":[1, 1],
         "Evas.Object.visibility":[true],
-        "Elm_Widget.part_text":[null, "Button"],
-        "Evas.Object.size":[73, 30]
+        "Evas.Object.size":[73, 30],
+        "Evas.Object.size_hint_align":[-1, 0.50],
+        "Elm_Widget.part_text":[null, "Authors"]
       }
     },
-    "elm_button4":
+    "elm_button_license":
     {
       "Desc":
       {
         "parent":"elm_box6",
-        "class":"Elm_Button"
+        "class":"Elm_Button",
+        "public":true
       },
       "Properties":
       {
         "Evas.Object.size_hint_weight":[1, 1],
         "Evas.Object.visibility":[true],
-        "Elm_Widget.part_text":[null, "Button"],
-        "Evas.Object.size":[73, 30]
+        "Evas.Object.size":[73, 30],
+        "Evas.Object.size_hint_align":[-1, 0.50],
+        "Elm_Widget.part_text":[null, "License"]
       }
     },
     "elm_entry1":
@@ -301,7 +310,8 @@
       "Desc":
       {
         "parent":"elm_box7",
-        "class":"Elm_Entry"
+        "class":"Elm_Entry",
+        "public":true
       },
       "Properties":
       {
@@ -311,6 +321,22 @@
         "Evas.Object.size":[60, 30],
         "Evas.Object.size_hint_align":[-1, -1],
         "Elm_Entry.scrollable":[true]
+      }
+    },
+    "elm_label1":
+    {
+      "Desc":
+      {
+        "parent":"elm_box6",
+        "class":"Elm_Label",
+        "public":true
+      },
+      "Properties":
+      {
+        "Evas.Object.size_hint_weight":[1, 1],
+        "Evas.Object.visibility":[true],
+        "Evas.Object.size":[60, 30],
+        "Elm_Widget.part_text":[null, "Version"]
       }
     }
   }
