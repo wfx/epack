@@ -35,7 +35,8 @@ from efl.elementary.genlist import Genlist, GenlistItemClass, \
 from efl.elementary.button import Button
 from efl.elementary.table import Table
 from efl.elementary.check import Check
-from efl.elementary.fileselector import Fileselector
+#from efl.elementary.fileselector import Fileselector
+from elmextensions import FileSelector as Fileselector
 from efl.elementary.popup import Popup
 from efl.elementary.progressbar import Progressbar
 from efl.elementary.separator import Separator
@@ -482,7 +483,7 @@ class DestinationButton(Button):
 
 
 class FileSelectorInwin(Fileselector):
-    def __init__(self, parent, title, done_cb, **kargs):
+    def __init__(self, parent, title, done_cb, folder_only=False, **kargs):
         self._user_cb = done_cb
 
         self._inwin = InnerWindow(parent)
@@ -498,7 +499,9 @@ class FileSelectorInwin(Fileselector):
         Fileselector.__init__(self, vbox, expandable=False,
                               size_hint_weight=EXPAND_BOTH,
                               size_hint_align=FILL_BOTH, **kargs)
-        self.callback_done_add(self._fileselector_done_cb)
+        self.folderOnlySet(folder_only)
+        self.setMode("Open")
+        self.callback_cancel_add(self.delete)
         self.callback_activated_add(self._fileselector_done_cb)
         # TODO this filter seems not to work well...need fixing
         # fs.mime_types_filter_append(list(EXTRACT_MAP.keys()), 'Archive files')
@@ -508,7 +511,8 @@ class FileSelectorInwin(Fileselector):
 
         self._inwin.activate()
 
-    def delete(self):
+    def delete(self, arg=None):
+        self.shutdown()
         self._inwin.delete()
 
     def _fileselector_done_cb(self, fs, path):
