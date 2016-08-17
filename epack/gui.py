@@ -175,7 +175,8 @@ class MainWin(StandardWindow):
                 txt = _('<b>Archive:</b> %s') % \
                       (os.path.basename(self.app.file_name))
 
-            lb = Label(box, text='<align=left>%s</align>' % txt)
+            txt = '<align=left>%s</align>' % txt
+            lb = Label(box, ellipsis=True, text=txt)
             bt = Button(box, content=lb, size_hint_weight=EXPAND_HORIZ,
                         size_hint_fill=FILL_HORIZ)
             bt.callback_clicked_add(lambda b: \
