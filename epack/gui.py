@@ -199,7 +199,7 @@ class MainWin(StandardWindow):
         box.pack_end(sep)
         sep.show()
 
-        ic = Icon(box, standard='dialog-info', size_hint_min=(24,24))
+        ic = Icon(box, standard='dialog-information', size_hint_min=(24,24))
         ic.callback_clicked_add(lambda i: InfoWin(self))
         box.pack_end(ic)
         ic.show()
