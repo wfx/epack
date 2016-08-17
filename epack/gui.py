@@ -20,6 +20,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 
 from efl import ecore
+from efl import evas
 from efl import elementary
 from efl.evas import EXPAND_BOTH, EXPAND_HORIZ, EXPAND_VERT, \
     FILL_BOTH, FILL_HORIZ, FILL_VERT
@@ -63,69 +64,62 @@ class MainWin(StandardWindow):
         self.autodel_set(True)
         self.callback_delete_request_add(lambda o: self.app.exit())
 
-        # main vertical box
-        vbox = Box(self, size_hint_weight=EXPAND_BOTH)
-        self.resize_object_add(vbox)
-        vbox.show()
-
-        ### header horiz box (inside a padding frame)
-        frame = Frame(self, style='pad_medium',
-                      size_hint_weight=EXPAND_HORIZ,
-                      size_hint_align=FILL_HORIZ)
-        vbox.pack_end(frame)
+        ### main table (inside a padding frame)
+        frame = Frame(self, style='pad_small',
+                      size_hint_weight=EXPAND_BOTH, size_hint_align=FILL_BOTH)
+        self.resize_object_add(frame)
+        frame.content = table = Table(frame)
         frame.show()
 
+        ### header horiz box
         self.header_box = Box(self, horizontal=True,
                               size_hint_weight=EXPAND_HORIZ,
                               size_hint_align=FILL_HORIZ)
-        frame.content = self.header_box
+        table.pack(self.header_box, 0, 0, 3, 1)
         self.header_box.show()
 
-        # genlist with archive content
+        # genlist with archive content (inside a small padding frame)
+        frame = Frame(self, style='pad_small',
+                      size_hint_weight=EXPAND_BOTH, size_hint_align=FILL_BOTH)
+        table.pack(frame, 0, 1, 3, 1)
+
         self.file_itc = GenlistItemClass(item_style="no_icon",
                                          text_get_func=self._gl_file_text_get)
         self.fold_itc = GenlistItemClass(item_style="one_icon",
                                          text_get_func=self._gl_fold_text_get,
                                          content_get_func=self._gl_fold_icon_get)
-        self.file_list = Genlist(self, homogeneous=True,
-                                 size_hint_weight=EXPAND_BOTH,
-                                 size_hint_align=FILL_BOTH)
+        self.file_list = Genlist(frame, homogeneous=True)
         self.file_list.callback_expand_request_add(self._gl_expand_req_cb)
         self.file_list.callback_contract_request_add(self._gl_contract_req_cb)
         self.file_list.callback_expanded_add(self._gl_expanded_cb)
         self.file_list.callback_contracted_add(self._gl_contracted_cb)
-        vbox.pack_end(self.file_list)
-        self.file_list.show()
-
-        ### footer table (inside a padding frame)
-        frame = Frame(self, style='pad_medium',
-                      size_hint_weight=EXPAND_HORIZ,
-                      size_hint_align=FILL_HORIZ)
-        vbox.pack_end(frame)
+        frame.content = self.file_list
         frame.show()
 
-        table = Table(frame)
-        frame.content = table
-        table.show()
+        # rect hack to force a min size on the genlist
+        r = evas.Rectangle(table.evas, size_hint_min=(250, 250),
+                           size_hint_weight=EXPAND_BOTH,
+                           size_hint_align=FILL_BOTH)
+        table.pack(r, 0, 1, 3, 1)
 
         # FileSelectorButton
         self.fsb = DestinationButton(app, self)
-        table.pack(self.fsb, 0, 0, 3, 1)
+        table.pack(self.fsb, 0, 2, 3, 1)
         self.fsb.show()
 
         sep = Separator(table, horizontal=True,
                         size_hint_weight=EXPAND_HORIZ)
-        table.pack(sep, 0, 1, 3, 1)
+        table.pack(sep, 0, 3, 3, 1)
         sep.show()
 
         # extract button
         self.extract_btn = Button(table, text=_('Extract'))
         self.extract_btn.callback_clicked_add(self.extract_btn_cb)
-        table.pack(self.extract_btn, 0, 2, 1, 2)
+        table.pack(self.extract_btn, 0, 4, 1, 2)
         self.extract_btn.show()
 
         sep = Separator(table, horizontal=False)
-        table.pack(sep, 1, 2, 1, 2)
+        table.pack(sep, 1, 4, 1, 2)
         sep.show()
 
         # delete-archive checkbox
@@ -133,14 +127,14 @@ class MainWin(StandardWindow):
                              size_hint_weight=EXPAND_HORIZ,
                              size_hint_align=(0.0, 1.0))
         self.del_chk.callback_changed_add(self.del_check_cb)
-        table.pack(self.del_chk, 2, 2, 1, 1)
+        table.pack(self.del_chk, 2, 4, 1, 1)
         self.del_chk.show()
 
         # create-archive-folder checkbox
         self.create_folder_chk = Check(table, text=_('Create archive folder'),
                                        size_hint_weight=EXPAND_HORIZ,
                                        size_hint_align=(0.0, 1.0))
-        table.pack(self.create_folder_chk, 2, 3, 1, 1)
+        table.pack(self.create_folder_chk, 2, 5, 1, 1)
         self.create_folder_chk.callback_changed_add(
                                lambda c: self.update_fsb_label())
         self.create_folder_chk.show()
@@ -149,7 +143,6 @@ class MainWin(StandardWindow):
         self.update_ui()
 
         # show the window
-        self.resize(300, 380)
         self.show()
 
     def del_check_cb(self, check):
