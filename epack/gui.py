@@ -44,12 +44,20 @@ from epack import __version__
 import epack.utils as utils
 
 
+class SafeIcon(Icon):
+    def __init__(self, parent, icon_name, **kargs):
+        Icon.__init__(self, parent, **kargs)
+        try:
+            self.standard = icon_name
+        except:
+            print("ERROR: Cannot find icon: '%s'" % icon_name)
+
 
 def gl_fold_text_get(obj, part, item_data):
     return item_data[:-1].split('/')[-1]
 
 def gl_fold_icon_get(obj, part, item_data):
-    return Icon(obj, standard='folder')
+    return SafeIcon(obj, 'folder')
 
 def gl_file_text_get(obj, part, item_data):
     return item_data.split('/')[-1]
@@ -199,7 +207,7 @@ class MainWin(StandardWindow):
         box.pack_end(sep)
         sep.show()
 
-        ic = Icon(box, standard='dialog-information', size_hint_min=(24,24))
+        ic = SafeIcon(box, 'dialog-information', size_hint_min=(24,24))
         ic.callback_clicked_add(lambda i: InfoWin(self))
         box.pack_end(ic)
         ic.show()
@@ -388,7 +396,7 @@ class InfoWin(DialogWindow):
         vbox.show()
 
         # icon + version
-        ic = Icon(self, standard='epack', size_hint_min=(64,64))
+        ic = SafeIcon(self, 'epack', size_hint_min=(64,64))
         vbox.pack_end(ic)
         ic.show()
 
@@ -445,7 +453,7 @@ class DestinationButton(Button):
         self.content = box
         box.show()
 
-        icon = Icon(box, standard='folder', size_hint_min=(16,16))
+        icon = SafeIcon(box, 'folder', size_hint_min=(16,16))
         box.pack_end(icon)
         icon.show()
 
