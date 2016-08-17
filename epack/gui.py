@@ -53,16 +53,6 @@ class SafeIcon(Icon):
             print("ERROR: Cannot find icon: '%s'" % icon_name)
 
 
-def gl_fold_text_get(obj, part, item_data):
-    return item_data[:-1].split('/')[-1]
-
-def gl_fold_icon_get(obj, part, item_data):
-    return SafeIcon(obj, 'folder')
-
-def gl_file_text_get(obj, part, item_data):
-    return item_data.split('/')[-1]
-
-
 class MainWin(StandardWindow):
     def __init__(self, app):
         self.app = app
@@ -93,10 +83,10 @@ class MainWin(StandardWindow):
 
         # genlist with archive content
         self.file_itc = GenlistItemClass(item_style="no_icon",
-                                         text_get_func=gl_file_text_get)
+                                         text_get_func=self._gl_file_text_get)
         self.fold_itc = GenlistItemClass(item_style="one_icon",
-                                         text_get_func=gl_fold_text_get,
-                                         content_get_func=gl_fold_icon_get)
+                                         text_get_func=self._gl_fold_text_get,
+                                         content_get_func=self._gl_fold_icon_get)
         self.file_list = Genlist(self, homogeneous=True,
                                  size_hint_weight=EXPAND_BOTH,
                                  size_hint_align=FILL_BOTH)
@@ -272,6 +262,15 @@ class MainWin(StandardWindow):
 
         for path in files:
             self.file_list.item_append(self.file_itc, path, parent)
+
+    def _gl_fold_text_get(self, obj, part, item_data):
+        return item_data[:-1].split('/')[-1]
+
+    def _gl_fold_icon_get(self, obj, part, item_data):
+        return SafeIcon(obj, 'folder')
+
+    def _gl_file_text_get(self, obj, part, item_data):
+        return item_data.split('/')[-1]
 
     def _gl_expand_req_cb(self, gl, item):
         item.expanded = True
