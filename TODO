@@ -18,9 +18,6 @@ v 1.0.0
           1. the  "create fodler is checked"
           2. the archive contain only one folder
 
- * Add a second .desktop file "Extract here" that automatically start
-   the extraction and close the app when done
-
  * Use tooltips on the buttons to explain the functionality ?
 
  * Find a graphical way to make the "extract" button nicer
