@@ -1,4 +1,4 @@
-![icon](https://github.com/wfx/epack/blob/master/data/epack.png) epack
+![icon](https://github.com/wfx/epack/blob/master/data/icons/64x64/apps/epack.png) epack
 =====
 
 epack is a tiny file extractor
