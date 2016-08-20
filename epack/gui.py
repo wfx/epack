@@ -50,7 +50,7 @@ class SafeIcon(Icon):
         Icon.__init__(self, parent, **kargs)
         try:
             self.standard = icon_name
-        except:
+        except RuntimeWarning:
             print("ERROR: Cannot find icon: '%s'" % icon_name)
 
 
@@ -191,7 +191,7 @@ class MainWin(StandardWindow):
         box.pack_end(sep)
         sep.show()
 
-        ic = SafeIcon(box, 'dialog-information', size_hint_min=(24,24))
+        ic = SafeIcon(box, 'help-about', size_hint_min=(24,24))
         ic.callback_clicked_add(lambda i: InfoWin(self))
         box.pack_end(ic)
         ic.show()
