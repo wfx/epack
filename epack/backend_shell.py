@@ -22,7 +22,6 @@ import magic
 
 from efl import ecore
 
-from epack.utils import mime_type_query
 
 # the extracting application needs support to read from stdin.
 # and bsdtar is great at all.
