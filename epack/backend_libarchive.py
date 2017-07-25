@@ -91,13 +91,13 @@ class LibarchiveBackend(object):
         try:
             with self.libarchive.file_reader(archive_file) as archive:
                 for entry in archive:
-                    # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime)
+                    # print(entry.pathname, entry.size, oct(entry.perm), entry.mtime, entry.isdir)
                     path = os.path.join(destination, entry.pathname)
 
                     # create a folder
                     if entry.isdir:
                         if not os.path.exists(path):
-                            os.mkdir(path)
+                            os.makedirs(path)
                         perm_to_apply.insert(0, (path, entry.perm))
 
                     # or write a file to disk
