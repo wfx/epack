@@ -1,3 +1,8 @@
+# ⚠️ **ARCHIVED**
+This project is **no longer actively maintained**.
+
+---
+
 ![icon](https://github.com/wfx/epack/blob/master/data/icons/64x64/apps/epack.png) epack
 =====
 
